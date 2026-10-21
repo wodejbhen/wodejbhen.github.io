@@ -1,0 +1,1307 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>公共营养师三级 · 题库练习</title>
+<style>
+  :root{
+    --ink:#1a1a1a;
+    --paper:#faf7f0;
+    --card:#ffffff;
+    --green:#2d5f3f;
+    --green-light:#e7f0e9;
+    --amber:#b5650a;
+    --amber-light:#fbeede;
+    --red:#b3271e;
+    --red-light:#fbe9e7;
+    --line:#1a1a1a;
+    --muted:#6b6b63;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue",Arial,sans-serif;
+    -webkit-tap-highlight-color: transparent;
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+  }
+  .app{
+    width:100%;
+    max-width:480px;
+    min-height:100vh;
+    background:var(--paper);
+    display:flex;
+    flex-direction:column;
+    position:relative;
+  }
+  /* ---------- Nutrition-label inspired header ---------- */
+  .label-header{
+    border-bottom:8px solid var(--ink);
+    padding:18px 18px 10px;
+  }
+  .label-header .eyebrow{
+    font-size:11px;
+    letter-spacing:.12em;
+    text-transform:uppercase;
+    color:var(--muted);
+    font-weight:700;
+  }
+  .label-header h1{
+    margin:2px 0 6px;
+    font-size:26px;
+    font-weight:900;
+    letter-spacing:-0.01em;
+    font-stretch:condensed;
+    font-family:"Arial Narrow",Arial,sans-serif;
+    line-height:1.1;
+  }
+  .label-header .sub{
+    font-size:12px;
+    color:var(--muted);
+    border-top:1px solid var(--ink);
+    padding-top:6px;
+  }
+
+  /* ---------- generic screen container ---------- */
+  .screen{
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    padding:16px 18px 100px;
+  }
+  .hidden{display:none !important;}
+
+  /* ---------- Home screen ---------- */
+  .stat-panel{
+    border:3px solid var(--ink);
+    background:var(--card);
+    padding:14px 16px;
+    margin-bottom:18px;
+  }
+  .stat-panel .stat-row{
+    display:flex;
+    justify-content:space-between;
+    align-items:baseline;
+    padding:6px 0;
+    border-bottom:1px solid #ddd8cc;
+    font-size:13px;
+  }
+  .stat-panel .stat-row:last-child{border-bottom:none;}
+  .stat-panel .stat-row .label{color:var(--muted);}
+  .stat-panel .stat-row .value{
+    font-family:"Courier New",monospace;
+    font-weight:700;
+    font-size:16px;
+  }
+  .stat-panel .stat-row.total .value{font-size:22px; color:var(--green);}
+
+  .section-label{
+    font-size:11px;
+    font-weight:800;
+    letter-spacing:.1em;
+    text-transform:uppercase;
+    color:var(--ink);
+    margin:18px 0 10px;
+    padding-bottom:4px;
+    border-bottom:2px solid var(--ink);
+  }
+
+  .mode-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:10px;
+  }
+  .mode-card{
+    border:2px solid var(--ink);
+    background:var(--card);
+    padding:14px 12px;
+    text-align:left;
+    cursor:pointer;
+    font-family:inherit;
+    color:var(--ink);
+  }
+  .mode-card:active{ background:var(--green-light); }
+  .mode-card .mc-title{
+    font-weight:800;
+    font-size:15px;
+    margin-bottom:4px;
+  }
+  .mode-card .mc-desc{
+    font-size:11.5px;
+    color:var(--muted);
+    line-height:1.4;
+  }
+  .mode-card.wide{grid-column:1 / -1; display:flex; align-items:center; justify-content:space-between;}
+  .mode-card.danger{border-color:var(--red); }
+  .mode-card.danger .mc-title{color:var(--red);}
+  .mode-card.accent{border-color:var(--amber);}
+  .mode-card.accent .mc-title{color:var(--amber);}
+
+  .type-toggle{
+    display:flex;
+    border:2px solid var(--ink);
+    margin-bottom:14px;
+  }
+  .type-toggle button{
+    flex:1;
+    border:none;
+    background:var(--card);
+    padding:10px 6px;
+    font-size:12.5px;
+    font-weight:700;
+    font-family:inherit;
+    color:var(--ink);
+    border-right:2px solid var(--ink);
+  }
+  .type-toggle button:last-child{border-right:none;}
+  .type-toggle button.active{background:var(--ink); color:var(--paper);}
+
+  /* ---------- Quiz screen ---------- */
+  .quiz-topbar{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:14px 18px;
+    border-bottom:3px solid var(--ink);
+    background:var(--paper);
+    position:sticky;
+    top:0;
+    z-index:5;
+  }
+  .quiz-topbar button.back{
+    border:none;
+    background:none;
+    font-size:22px;
+    line-height:1;
+    color:var(--ink);
+    padding:4px 6px;
+    font-family:inherit;
+  }
+  .quiz-topbar .progress-text{
+    font-family:"Courier New",monospace;
+    font-weight:700;
+    font-size:14px;
+  }
+  .progress-bar-outer{
+    height:6px;
+    background:#e6e1d3;
+    border-bottom:2px solid var(--ink);
+  }
+  .progress-bar-inner{
+    height:100%;
+    background:var(--green);
+    width:0%;
+    transition:width .25s ease;
+  }
+
+  .qcard{
+    border:3px solid var(--ink);
+    background:var(--card);
+    margin-top:16px;
+    padding:0;
+  }
+  .qcard .qtype-bar{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:8px 14px;
+    border-bottom:2px solid var(--ink);
+    background:var(--ink);
+    color:var(--paper);
+    font-size:11px;
+    font-weight:800;
+    letter-spacing:.06em;
+  }
+  .qcard .qtype-bar .qnum{font-family:"Courier New",monospace;}
+  .qcard .qbody{
+    padding:16px 16px 6px;
+    font-size:16px;
+    line-height:1.6;
+    font-weight:600;
+  }
+  .qcard .uncertain-flag{
+    margin:0 16px 10px;
+    padding:8px 10px;
+    background:var(--amber-light);
+    border:1px solid var(--amber);
+    color:var(--amber);
+    font-size:11.5px;
+    line-height:1.5;
+  }
+
+  .options{
+    list-style:none;
+    margin:0;
+    padding:0 0 10px;
+  }
+  .options li{
+    border-top:1px solid #e3ded0;
+    margin:0 16px;
+  }
+  .opt-btn{
+    width:100%;
+    display:flex;
+    align-items:flex-start;
+    gap:10px;
+    background:none;
+    border:none;
+    text-align:left;
+    padding:12px 2px;
+    font-family:inherit;
+    font-size:14.5px;
+    line-height:1.5;
+    color:var(--ink);
+    cursor:pointer;
+  }
+  .opt-letter{
+    flex:0 0 auto;
+    width:26px;
+    height:26px;
+    border:2px solid var(--ink);
+    border-radius:50%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-weight:800;
+    font-size:13px;
+  }
+  .opt-btn.multi .opt-letter{border-radius:4px;}
+  .opt-text{flex:1; padding-top:3px;}
+
+  .opt-btn.selected .opt-letter{background:var(--ink); color:var(--paper);}
+  .opt-btn.correct .opt-letter{background:var(--green); border-color:var(--green); color:#fff;}
+  .opt-btn.correct .opt-text{color:var(--green); font-weight:700;}
+  .opt-btn.wrong .opt-letter{background:var(--red); border-color:var(--red); color:#fff;}
+  .opt-btn.wrong .opt-text{color:var(--red); font-weight:700; text-decoration:line-through;}
+  .opt-btn.disabled{cursor:default;}
+
+  .feedback-bar{
+    margin:0 16px 14px;
+    padding:10px 12px;
+    border:2px solid var(--green);
+    background:var(--green-light);
+    color:var(--green);
+    font-size:13px;
+    font-weight:700;
+    display:none;
+  }
+  .feedback-bar.show{display:block;}
+  .feedback-bar.wrong{border-color:var(--red); background:var(--red-light); color:var(--red);}
+
+  .quiz-actions{
+    position:fixed;
+    left:50%;
+    transform:translateX(-50%);
+    bottom:0;
+    width:100%;
+    max-width:480px;
+    background:var(--paper);
+    border-top:3px solid var(--ink);
+    padding:12px 18px calc(12px + env(safe-area-inset-bottom));
+    display:flex;
+    gap:10px;
+  }
+  .btn{
+    border:2px solid var(--ink);
+    background:var(--ink);
+    color:var(--paper);
+    font-family:inherit;
+    font-weight:800;
+    font-size:14px;
+    padding:13px 10px;
+    flex:1;
+    cursor:pointer;
+  }
+  .btn.secondary{
+    background:var(--card);
+    color:var(--ink);
+  }
+  .btn:disabled{opacity:.35; cursor:not-allowed;}
+  .btn.full{flex:none; width:100%;}
+
+  /* ---------- Result screen ---------- */
+  .result-hero{
+    border:3px solid var(--ink);
+    background:var(--card);
+    padding:24px 18px;
+    text-align:center;
+    margin-top:10px;
+  }
+  .result-hero .score{
+    font-family:"Courier New",monospace;
+    font-weight:900;
+    font-size:48px;
+    color:var(--green);
+    line-height:1;
+  }
+  .result-hero .score-sub{
+    font-size:12px;
+    color:var(--muted);
+    margin-top:6px;
+    letter-spacing:.05em;
+  }
+  .result-grid{
+    display:flex;
+    border-top:2px solid var(--ink);
+    margin-top:18px;
+  }
+  .result-grid .rg-item{
+    flex:1;
+    text-align:center;
+    padding:12px 4px;
+    border-right:1px solid #ddd8cc;
+  }
+  .result-grid .rg-item:last-child{border-right:none;}
+  .result-grid .rg-item .rg-val{font-family:"Courier New",monospace; font-weight:800; font-size:20px;}
+  .result-grid .rg-item.correct .rg-val{color:var(--green);}
+  .result-grid .rg-item.wrong .rg-val{color:var(--red);}
+  .result-grid .rg-item .rg-label{font-size:10.5px; color:var(--muted); margin-top:2px;}
+
+  /* ---------- Modal ---------- */
+  .modal-mask{
+    position:fixed; inset:0;
+    background:rgba(26,26,26,.55);
+    display:flex; align-items:center; justify-content:center;
+    z-index:50;
+    padding:24px;
+  }
+  .modal-mask.hidden{display:none;}
+  .modal-box{
+    background:var(--card);
+    border:3px solid var(--ink);
+    max-width:340px;
+    width:100%;
+    padding:20px;
+  }
+  .modal-box h3{margin:0 0 10px; font-size:16px;}
+  .modal-box p{margin:0 0 18px; font-size:13.5px; color:#444; line-height:1.6;}
+  .modal-actions{display:flex; gap:10px;}
+
+  .toast{
+    position:fixed;
+    bottom:90px;
+    left:50%;
+    transform:translateX(-50%);
+    background:var(--ink);
+    color:var(--paper);
+    padding:10px 18px;
+    font-size:13px;
+    font-weight:700;
+    z-index:60;
+    opacity:0;
+    pointer-events:none;
+    transition:opacity .2s ease;
+    max-width:80%;
+    text-align:center;
+  }
+  .toast.show{opacity:1;}
+
+  .empty-state{
+    text-align:center;
+    padding:40px 20px;
+    color:var(--muted);
+    font-size:13.5px;
+    line-height:1.7;
+  }
+</style>
+</head>
+<body>
+<div class="app" id="app">
+
+  <!-- ===================== HOME SCREEN ===================== -->
+  <div id="screen-home">
+    <div class="label-header">
+      <div class="eyebrow">Nutrition Facts · 题库营养标签</div>
+      <h1>公共营养师三级</h1>
+      <div class="sub">理论知识练习 · 共 <span id="home-total-count">0</span> 题（单选 + 多选）</div>
+    </div>
+
+    <div class="screen" style="padding-bottom:30px;">
+      <div class="stat-panel">
+        <div class="stat-row total">
+          <span class="label">累计练习题次</span>
+          <span class="value" id="stat-attempted">0</span>
+        </div>
+        <div class="stat-row">
+          <span class="label">正确率</span>
+          <span class="value" id="stat-accuracy">0%</span>
+        </div>
+        <div class="stat-row">
+          <span class="label">当前错题数</span>
+          <span class="value" id="stat-wrong">0</span>
+        </div>
+        <div class="stat-row">
+          <span class="label">上次练习到</span>
+          <span class="value" id="stat-resume">—</span>
+        </div>
+      </div>
+
+      <div class="section-label">题型筛选</div>
+      <div class="type-toggle" id="type-toggle">
+        <button data-type="all" class="active">全部</button>
+        <button data-type="single">单选题</button>
+        <button data-type="multi">多选题</button>
+      </div>
+
+      <div class="section-label">开始练习</div>
+      <div class="mode-grid">
+        <button class="mode-card" id="mode-sequential">
+          <div class="mc-title">顺序练习</div>
+          <div class="mc-desc">按题库顺序逐题作答</div>
+        </button>
+        <button class="mode-card" id="mode-random">
+          <div class="mc-title">随机练习</div>
+          <div class="mc-desc">打乱顺序随机出题</div>
+        </button>
+        <button class="mode-card wide" id="mode-resume">
+          <div>
+            <div class="mc-title">继续上次</div>
+            <div class="mc-desc" id="resume-desc">从上次中断的位置继续</div>
+          </div>
+          <div style="font-size:20px;">→</div>
+        </button>
+        <button class="mode-card wide accent" id="mode-wrong">
+          <div>
+            <div class="mc-title">错题练习</div>
+            <div class="mc-desc" id="wrong-desc">只练习答错过的题目</div>
+          </div>
+          <div style="font-size:20px;">→</div>
+        </button>
+      </div>
+
+      <div class="section-label">数据管理</div>
+      <div class="mode-grid">
+        <button class="mode-card" id="btn-export">
+          <div class="mc-title">导出学习记录</div>
+          <div class="mc-desc">生成一段代码，可手动保存或换设备使用</div>
+        </button>
+        <button class="mode-card" id="btn-import">
+          <div class="mc-title">导入学习记录</div>
+          <div class="mc-desc">粘贴之前导出的代码，恢复学习进度</div>
+        </button>
+        <button class="mode-card danger wide" id="btn-reset">
+          <div>
+            <div class="mc-title">清空全部学习记录</div>
+            <div class="mc-desc">重置正确率、错题本和进度（不可恢复）</div>
+          </div>
+        </button>
+      </div>
+      <div class="empty-state" style="padding:14px 2px 0; text-align:left; font-size:11.5px;">
+        提示：本页面的学习记录保存在当前浏览器本地（localStorage）。如果你每次都是重新打开/转发文件，或在不支持本地存储的环境中查看，记录可能不会保留——建议练习后用上方"导出学习记录"保存一份代码。
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== QUIZ SCREEN ===================== -->
+  <div id="screen-quiz" class="hidden">
+    <div class="quiz-topbar">
+      <button class="back" id="quiz-back">←</button>
+      <div class="progress-text"><span id="quiz-pos">1</span> / <span id="quiz-total">1</span></div>
+      <div style="width:30px;"></div>
+    </div>
+    <div class="progress-bar-outer"><div class="progress-bar-inner" id="progress-bar"></div></div>
+
+    <div class="screen" id="quiz-screen-inner">
+      <div class="qcard" id="qcard">
+        <div class="qtype-bar">
+          <span id="q-type-label">单选题</span>
+          <span class="qnum" id="q-id-label">#0001</span>
+        </div>
+        <div class="qbody" id="q-body"></div>
+        <div class="uncertain-flag hidden" id="q-uncertain">
+          ⚠️ 该题在原始题库中存在两个版本的不同答案，已采用其中一版本，建议自行核实标准答案。
+        </div>
+        <ul class="options" id="q-options"></ul>
+        <div class="feedback-bar" id="feedback-bar"></div>
+      </div>
+    </div>
+
+    <div class="quiz-actions">
+      <button class="btn secondary" id="btn-prev">上一题</button>
+      <button class="btn" id="btn-submit" disabled>确认答案</button>
+      <button class="btn hidden" id="btn-next">下一题</button>
+    </div>
+  </div>
+
+  <!-- ===================== RESULT SCREEN ===================== -->
+  <div id="screen-result" class="hidden">
+    <div class="label-header">
+      <div class="eyebrow">Nutrition Facts · 本次练习结果</div>
+      <h1 id="result-title">练习完成</h1>
+    </div>
+    <div class="screen">
+      <div class="result-hero">
+        <div class="score" id="result-score">0%</div>
+        <div class="score-sub">正确率 ACCURACY</div>
+        <div class="result-grid">
+          <div class="rg-item correct"><div class="rg-val" id="result-correct">0</div><div class="rg-label">答对</div></div>
+          <div class="rg-item wrong"><div class="rg-val" id="result-wrong">0</div><div class="rg-label">答错</div></div>
+          <div class="rg-item"><div class="rg-val" id="result-total">0</div><div class="rg-label">总题数</div></div>
+        </div>
+      </div>
+      <div style="margin-top:20px; display:flex; flex-direction:column; gap:10px;">
+        <button class="btn full" id="result-review-wrong">查看本轮错题</button>
+        <button class="btn secondary full" id="result-home">返回首页</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== MODAL ===================== -->
+  <div class="modal-mask hidden" id="modal-mask">
+    <div class="modal-box">
+      <h3 id="modal-title">提示</h3>
+      <p id="modal-body"></p>
+      <div class="modal-actions">
+        <button class="btn secondary" id="modal-cancel">取消</button>
+        <button class="btn" id="modal-confirm">确定</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== EXPORT / IMPORT MODAL ===================== -->
+  <div class="modal-mask hidden" id="data-modal-mask">
+    <div class="modal-box">
+      <h3 id="data-modal-title">导出学习记录</h3>
+      <p id="data-modal-desc" style="margin-bottom:10px;"></p>
+      <textarea id="data-modal-textarea" rows="6"
+        style="width:100%;font-family:'Courier New',monospace;font-size:11px;line-height:1.5;border:2px solid var(--ink);padding:8px;resize:none;background:var(--paper);color:var(--ink);"
+        placeholder="将之前导出的代码粘贴到这里"></textarea>
+      <p id="data-modal-error" class="hidden" style="margin:8px 0 0; color:var(--red); font-size:12px;"></p>
+      <div class="modal-actions" style="margin-top:16px;">
+        <button class="btn secondary" id="data-modal-cancel">关闭</button>
+        <button class="btn" id="data-modal-action">复制代码</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+</div>
+
+<script id="question-data" type="application/json">[{"id": 1, "type": "single", "content": "足月新生儿平均身长为(    )。", "options": {"A": "45cm", "B": "50cm", "C": "55cm", "D": "60cm"}, "answer": "B", "uncertain": false}, {"id": 2, "type": "single", "content": "膳食纤维摄入过少易导致 (    )。", "options": {"A": "肥胖症和胆石症", "B": "便秘和憩室病", "C": "大肠癌", "D": "以上都包括"}, "answer": "D", "uncertain": false}, {"id": 3, "type": "single", "content": "社区高血压人群营养改善项目中对健康人群开展健康促进活动，每年至少（    ）次。", "options": {"A": "1", "B": "2", "C": "3", "D": "4"}, "answer": "B", "uncertain": false}, {"id": 4, "type": "single", "content": "记账法（    ）计算出平均每人每日的食物消费量。", "options": {"A": "需要", "B": "不需要", "C": "都可以", "D": "无法判断"}, "answer": "A", "uncertain": false}, {"id": 5, "type": "single", "content": "生长发育时期的儿童、孕妇和乳母很容易出现维生素A缺乏，最主要的原因可能是（    ）。", "options": {"A": "维生素A的需要量较高", "B": "维生素A的吸收率不高", "C": "膳食不均衡", "D": "饮食不规律"}, "answer": "A", "uncertain": false}, {"id": 6, "type": "single", "content": "以能量供给不足引起的蛋白质 - 能量营养不良，病人的体重常低于其标准体重的（    ）。", "options": {"A": "0.4", "B": "0.5", "C": "0.6", "D": "0.7"}, "answer": "C", "uncertain": false}, {"id": 7, "type": "single", "content": "从总体上看，以下不属于综合信息的收集方法的是（　　）。", "options": {"A": "实验法", "B": "调查法", "C": "访问法", "D": "二手资料法"}, "answer": "B", "uncertain": false}, {"id": 8, "type": "single", "content": "胃底腺中分泌盐酸的细胞是(    )。", "options": {"A": "主细胞", "B": "壁细胞", "C": "黏液细胞", "D": "杯状细胞"}, "answer": "B", "uncertain": false}, {"id": 9, "type": "single", "content": "出现骨软化病的病因不包括（    ）。", "options": {"A": "维生素D的缺乏", "B": "钙的缺乏", "C": "磷的缺乏", "D": "维生素A的缺乏"}, "answer": "D", "uncertain": false}, {"id": 10, "type": "single", "content": "在制作食品营养标签时，通常会涉及营养声称，而营养声称主要包括含量声称和比较声称，那么以下属于比较声称的是（    ）。", "options": {"A": "高", "B": "零", "C": "富含", "D": "增加"}, "answer": "D", "uncertain": false}, {"id": 11, "type": "single", "content": "社区营养教育程序的第一步是（     ）。", "options": {"A": "设计营养教育计划", "B": "选择教育途径", "C": "选择教育资料", "D": "预试验"}, "answer": "A", "uncertain": false}, {"id": 12, "type": "single", "content": "营养学科普文章中应重点传播内容是（　　）。", "options": {"A": "最新研究", "B": "基本营养知识", "C": "饮食文化", "D": "营养争议"}, "answer": "B", "uncertain": false}, {"id": 13, "type": "single", "content": "食品中检出(    )，表示食品曾受到人和动物的粪便污染。", "options": {"A": "布鲁杆菌属", "B": "伤寒杆菌", "C": "大肠杆菌", "D": "副溶血弧菌"}, "answer": "C", "uncertain": false}, {"id": 14, "type": "single", "content": "T淋巴细胞分化成熟的场所是(    )。", "options": {"A": "脾脏", "B": "脊髓", "C": "骨髓", "D": "胸腺"}, "answer": "D", "uncertain": false}, {"id": 15, "type": "single", "content": "大学生标准人蛋白质的参考摄入量占总能量的（   ）。", "options": {"A": "0.1", "B": "0.2", "C": "0.3", "D": "0.4"}, "answer": "A", "uncertain": false}, {"id": 16, "type": "single", "content": "集体主义最高标准是(    )。", "options": {"A": "人民群众至上", "B": "个人利益服从国家利益", "C": "个人利益服从民族利益", "D": "一切言论和行动符合人民群众的集体主义要求"}, "answer": "D", "uncertain": false}, {"id": 17, "type": "single", "content": "孕妇补铁的主要目的是(    )。", "options": {"A": "红细胞增加", "B": "预防贫血", "C": "脾脏储留", "D": "增强胎儿免疫力"}, "answer": "B", "uncertain": false}, {"id": 18, "type": "single", "content": "传播营养学知识信息的策略中不包括（　　）。", "options": {"A": "无知阶段", "B": "知晓阶段", "C": "决策与采纳阶段", "D": "收集阶段"}, "answer": "D", "uncertain": false}, {"id": 19, "type": "single", "content": "肉类中蛋白质组成适合人体的需要，营养价值较高，但脂肪组成中（　　）比例较高，对患有心血管疾病、血脂过高的人不利。", "options": {"A": "单不饱和脂肪酸", "B": "长链脂肪酸", "C": "饱和脂肪酸", "D": "多不饱和脂肪酸"}, "answer": "C", "uncertain": false}, {"id": 20, "type": "single", "content": "在进行学生餐食谱设计时，可以直接根据（     ）中推荐的每天午餐食物种类及数量设计食谱。", "options": {"A": "《学生餐营养指南》", "B": "《中国食物成分表》", "C": "《中国居民膳食宝塔》", "D": "《中国居民膳食营养素参考摄入量》"}, "answer": "A", "uncertain": false}, {"id": 21, "type": "single", "content": "早产儿和低出生体重儿容易发生（   ）缺乏，引起溶血性贫血、血小板增加及硬肿症。", "options": {"A": "维生素E", "B": "维生素K", "C": "锌", "D": "维生素D"}, "answer": "A", "uncertain": false}, {"id": 22, "type": "single", "content": "在大米中，（　　）的累积可能导致肾脏疾病。", "options": {"A": "铅", "B": "镍", "C": "镉", "D": "铁"}, "answer": "C", "uncertain": false}, {"id": 23, "type": "single", "content": "营养教育效果评价近期效果指（     ）。", "options": {"A": "人们营养健康状况和生活质量的变化", "B": "人们身高、体重的变化", "C": "目标人群的知识、态度、信息、服务的变化", "D": "行为和相关危险因素的变化"}, "answer": "C", "uncertain": false}, {"id": 24, "type": "single", "content": "性发育障碍是青少年缺乏（  ）的一个主要表现。", "options": {"A": "铁", "B": "维生素C", "C": "维生素D", "D": "锌"}, "answer": "D", "uncertain": false}, {"id": 25, "type": "single", "content": "参与式营养教育培训的形式不包括（　　）。", "options": {"A": "小组活动", "B": "互动式讲座", "C": "技术分析", "D": "面对面咨询"}, "answer": "C", "uncertain": false}, {"id": 26, "type": "single", "content": "最容易导致维生素C的大量损失烹饪方法是（　　）。", "options": {"A": "蒸煮", "B": "烤制", "C": "水煮", "D": "微波"}, "answer": "C", "uncertain": false}, {"id": 27, "type": "single", "content": "可以在（    ）添加酪蛋白磷酸肽。", "options": {"A": "原粮", "B": "焙烤食品", "C": "饮用天然矿泉水", "D": "风味发酵乳"}, "answer": "D", "uncertain": false}, {"id": 28, "type": "single", "content": "与其他方法比较，记账法适合进行（    ）的调查。", "options": {"A": "短期", "B": "中期", "C": "长期", "D": "无法判断"}, "answer": "C", "uncertain": false}, {"id": 29, "type": "single", "content": "男孩约在(    )身高停止增长。", "options": {"A": "15岁~17岁", "B": "16岁~18岁", "C": "18岁~20岁", "D": "20岁~22岁"}, "answer": "D", "uncertain": false}, {"id": 30, "type": "single", "content": "《预包装食品营养标签通则》是从（    ）年正式实施的。", "options": {"A": "2011", "B": "2013", "C": "2010", "D": "2007"}, "answer": "B", "uncertain": false}, {"id": 31, "type": "single", "content": "在设计膳食调查表方面建议用（    ）的方法，即利用以前从目标人群中收集到的资料来设计食物种类表和食物份额。", "options": {"A": "记账", "B": "称重", "C": "数据库", "D": "排序"}, "answer": "C", "uncertain": false}, {"id": 32, "type": "single", "content": "营养与健康信息调查表编制的基本原则不包括（　　）。", "options": {"A": "适宜性", "B": "合理性", "C": "主观性", "D": "相关性"}, "answer": "C", "uncertain": false}, {"id": 33, "type": "single", "content": "营养指导师在进行饮食行为与健康的宣讲过程中，不能采用以下（     ）方法", "options": {"A": "讲授", "B": "演示", "C": "以促销为目的赠送保健品", "D": "参观实验"}, "answer": "C", "uncertain": false}, {"id": 34, "type": "single", "content": "维生素B2主要在（    ）被吸收，如果该部位发生病变，则可能会造成维生素B2缺乏的情况。", "options": {"A": "胃部", "B": "食道", "C": "大肠", "D": "小肠"}, "answer": "D", "uncertain": false}, {"id": 35, "type": "single", "content": "日常活动中，属于中等活动水平的是（　　）。", "options": {"A": "游泳30min", "B": "步行15min", "C": "踢足球1h", "D": "睡觉6h"}, "answer": "B", "uncertain": false}, {"id": 36, "type": "single", "content": "患者全身消瘦、贫血、咳嗽、呼吸音粗糙有啰音。颌下、乳房和其他体表淋巴结肿大变硬。局部病灶有大小不一样的结节，呈半透明或白色，也可呈干酪样钙化或化脓等。可能是感染（    ）。", "options": {"A": "结核杆菌", "B": "炭疽", "C": "鼻疽", "D": "口蹄疫"}, "answer": "A", "uncertain": false}, {"id": 37, "type": "single", "content": "人体内能量的储存形式是（    ）。", "options": {"A": "蛋白质", "B": "碳水化合物", "C": "维生素", "D": "脂肪"}, "answer": "D", "uncertain": false}, {"id": 38, "type": "single", "content": "下列说法正确的是（   ）。", "options": {"A": "加工过程中，所用原料变成其他成分，仍可以使用“配料”或“配料表”作为引导词。", "B": "未获批的某种添加剂，在该类食品中使用时，可以使用“不添加”的说法。", "C": "致敏物质的标示形式，由食品生产经营企业自行选择。", "D": "生产加工过程用到的加工助剂也需要标示在配料表中。"}, "answer": "C", "uncertain": false}, {"id": 39, "type": "single", "content": "膳食中有利于钙吸收的有（    ）。", "options": {"A": "草酸", "B": "碱性磷酸盐", "C": "脂肪", "D": "维生素D"}, "answer": "D", "uncertain": false}, {"id": 40, "type": "single", "content": "儿童脂肪提供的能量占总能量的百分比在(    )时接近成人推荐值。", "options": {"A": "3岁~4岁", "B": "4岁~6岁", "C": "5岁~7岁", "D": "7岁~8岁"}, "answer": "B", "uncertain": false}, {"id": 41, "type": "single", "content": "在无菌条件下进行尿培养，应用无菌容器收集（   ）尿液。", "options": {"A": "前段", "B": "中段", "C": "后段", "D": "以上均可以"}, "answer": "B", "uncertain": false}, {"id": 42, "type": "single", "content": "在经济不发达地区，部分农民收入偏低，营养摄入不足导致的（    ）发病率高于城市区域。", "options": {"A": "高血压", "B": "缺铁性贫血", "C": "冠心病", "D": "糖尿病"}, "answer": "B", "uncertain": false}, {"id": 43, "type": "single", "content": "知信行理论模式认为行为改变的是三个关键步骤是（    ）。", "options": {"A": "接受理论、确立信念和改变行为", "B": "接受知识、确立信念和改变行为", "C": "接受知识、确立行为和改变行为", "D": "接受知识、确立信念和改变态度"}, "answer": "B", "uncertain": false}, {"id": 44, "type": "single", "content": "下列血液抗凝剂中最常用的是（　　）。", "options": {"A": "肝素", "B": "草酸钾", "C": "EDTA钠盐", "D": "枸橼酸钾"}, "answer": "B", "uncertain": false}, {"id": 45, "type": "single", "content": "食物中某营养素含量等于（    ）。", "options": {"A": "食物量/100*可食部分比例*每百克食物中营养素含量", "B": "食物量*可食部分比例*每百克食物中营养素含量", "C": "食物量*可食部分比例/每百克食物中营养素含量", "D": "食物量/可食部分比例*每百克食物中营养素含量"}, "answer": "A", "uncertain": false}, {"id": 46, "type": "single", "content": "中枢神经系统中调节躯体平衡的主要部位是(    )。", "options": {"A": "脑干", "B": "间脑", "C": "小脑", "D": "端脑"}, "answer": "C", "uncertain": false}, {"id": 47, "type": "single", "content": "个人健康档案中的临床资料不包括（　　）。", "options": {"A": "现病史", "B": "既往史", "C": "家族史", "D": "血型"}, "answer": "D", "uncertain": false}, {"id": 48, "type": "single", "content": "收集（ ）时，应将24小时内排出的所有粪便收集于同一容器中送检。", "options": {"A": "常规粪便标本", "B": "水样粪便标本", "C": "成形粪便标本", "D": "浓缩粪便标本"}, "answer": "D", "uncertain": false}, {"id": 49, "type": "single", "content": "营养素钙的补充除来源有规定外，其（ ）含量也有规定。", "options": {"A": "最高", "B": "最低", "C": "最高和最低", "D": "最高或最低"}, "answer": "C", "uncertain": false}, {"id": 50, "type": "single", "content": "皮褶厚度测量点一般在皮褶提起点（　　）处。", "options": {"A": "下方1cm", "B": "下方２cm", "C": "上方２cm", "D": "上方1cm"}, "answer": "A", "uncertain": false}, {"id": 51, "type": "single", "content": "常见的社区营养问题有（　　）。", "options": {"A": "超重和肥胖", "B": "营养不良", "C": "铁缺乏和缺铁性贫血", "D": "以上都是"}, "answer": "D", "uncertain": false}, {"id": 52, "type": "single", "content": "社区营养干预方案必须考虑（ ）。", "options": {"A": "社区的历史", "B": "社区的大小", "C": "社区在该地区中的重要性", "D": "所要干预营养问题的重要程度"}, "answer": "D", "uncertain": false}, {"id": 53, "type": "single", "content": "学龄前儿童三餐餐次比建议按（ ）分配。", "options": {"A": "30%，40%，30%", "B": "20%，40%，40%", "C": "30%，30%，40%", "D": "40%，40%，20%"}, "answer": "A", "uncertain": false}, {"id": 54, "type": "single", "content": "下列方法被认为是一种比较精确的膳食调查方法的是（ ）。", "options": {"A": "膳食史法", "B": "称重法", "C": "24小时回顾法", "D": "食物摄入频率法"}, "answer": "B", "uncertain": false}, {"id": 55, "type": "single", "content": "24小时回顾法是目前获得（ ）膳食摄入量最常用的一种调查方法。", "options": {"A": "家庭", "B": "集体食堂", "C": "个人", "D": "部队"}, "answer": "C", "uncertain": false}, {"id": 56, "type": "single", "content": "饮食要有合理的膳食能量分布，一般两餐时间间隔为（ ）。", "options": {"A": "4~5h", "B": "3~4h", "C": "5~6h", "D": "6~7h"}, "answer": "A", "uncertain": false}, {"id": 57, "type": "single", "content": "按照生物富集作用，以下食物理论上应优先选择（ ）。", "options": {"A": "虾米", "B": "小鱼", "C": "大鱼", "D": "水鸟"}, "answer": "A", "uncertain": false}, {"id": 58, "type": "single", "content": "河豚毒素含量最多的器官是 ( )。", "options": {"A": "鱼肉和血液", "B": "鱼头和鱼尾", "C": "肝脏和卵巢", "D": "鱼鳃和眼睛"}, "answer": "C", "uncertain": false}, {"id": 59, "type": "single", "content": "依据膳食调查建立的数据库应该包括的内容有（ ）：①调查对象编码；②食物编码；③食物重量；④进餐时间；⑤进餐地点", "options": {"A": "②③④", "B": "①②③④", "C": "②③④⑤", "D": "①②③④⑤"}, "answer": "D", "uncertain": false}, {"id": 60, "type": "single", "content": "关于道德评价，正确的说法是( )。", "options": {"A": "每个人都能对他人进行道德评价，但不能做自我道德评价", "B": "道德评价是一种纯粹的主观判断，没有客观依据和标准", "C": "领导的道德评价具有权威性", "D": "对一种行为进行道德评价，关键看其是否符合社会道德规范"}, "answer": "D", "uncertain": false}, {"id": 61, "type": "single", "content": "消化管最狭窄的部位是( )。", "options": {"A": "咽", "B": "食管", "C": "十二指肠", "D": "空肠"}, "answer": "B", "uncertain": false}, {"id": 63, "type": "single", "content": "铁缺乏的原因不包括（ ）。", "options": {"A": "体内铁酶的活性降低", "B": "铁的需要量增加", "C": "膳食铁摄入不足", "D": "基础代谢低"}, "answer": "D", "uncertain": false}, {"id": 64, "type": "single", "content": "在科普文章信息表达形式的设计中，能给人以精确的数据和度量分寸感，行为的可操作性强而具体的信息是（ ）", "options": {"A": "质化信息", "B": "量化信息", "C": "同化信息", "D": "分层信息"}, "answer": "B", "uncertain": false}, {"id": 65, "type": "single", "content": "秋季节海产鱼、虾中检出率较高的致病菌是（ ）。", "options": {"A": "沙门菌", "B": "副溶血弧菌", "C": "肉毒梭菌", "D": "葡萄球菌"}, "answer": "B", "uncertain": false}, {"id": 66, "type": "single", "content": "动物在宰前过度疲劳，糖原含量（ ），宰后放置时间过长，乳酸相应（ ）。", "options": {"A": "下降；增高", "B": "下降；降低", "C": "上升；降低", "D": "上升；增高"}, "answer": "A", "uncertain": false}, {"id": 67, "type": "single", "content": "社区动员的主要对象是（ ）。", "options": {"A": "社区的基层组织", "B": "家庭", "C": "基层社区卫生人员", "D": "营养工作人员"}, "answer": "A", "uncertain": false}, {"id": 68, "type": "single", "content": "在保存尿液时，每升尿液中应加入（ ）福尔马林，以达到防腐作用。", "options": {"A": "2 mL", "B": "5 mL", "C": "8 mL", "D": "11mL"}, "answer": "B", "uncertain": false}, {"id": 69, "type": "single", "content": "学龄儿童膳食原则为充足的能量，足量的动物性食品、果蔬、谷类及 ( )。", "options": {"A": "平衡膳食，多运动", "B": "防止肥胖", "C": "适当节食", "D": "不宜控制高能量食品"}, "answer": "A", "uncertain": false}, {"id": 70, "type": "single", "content": "为准确定量每日从尿液中排出物质的量，必须收集的尿液是（　　）。", "options": {"A": "24h尿", "B": "任意尿", "C": "餐后尿", "D": "晨尿"}, "answer": "A", "uncertain": false}, {"id": 71, "type": "single", "content": "在进行24小时回顾法调查时（    ）调查在外就餐的食物及摄入量。", "options": {"A": "不需要", "B": "需要", "C": "都可以", "D": "视被调查者的记忆情况而定"}, "answer": "B", "uncertain": false}, {"id": 72, "type": "single", "content": "下列不属于青少年选择食品的要点的是（ ）。", "options": {"A": "多吃谷类，供给充足能量", "B": "保证优质蛋白质的供给", "C": "保证蔬菜水果的供给", "D": "多吃油炸食品"}, "answer": "D", "uncertain": false}, {"id": 73, "type": "single", "content": "在食品检验中，菌落总数超标通常表示（　　）。", "options": {"A": "营养丰富", "B": "微生物过度生长", "C": "适宜长期存储", "D": "包装破损"}, "answer": "B", "uncertain": false}, {"id": 74, "type": "single", "content": "膳食食法是调查调查对象在过去一段时间内的日常膳食模式和摄入量，因此对那些每天饮食有（ ）变化的个体是不适宜的，且对调查对象要求（ ）。", "options": {"A": "较大、较低", "B": "较小、较高", "C": "较大，较高", "D": "较小、较低"}, "answer": "C", "uncertain": false}, {"id": 75, "type": "single", "content": "大众传播的营养学信息是公开的，面向（　　）。", "options": {"A": "全社会人群", "B": "学生人群", "C": "孕妇人群", "D": "老年人群"}, "answer": "A", "uncertain": false}, {"id": 76, "type": "single", "content": "日本神通川流域的“骨痛病”（痛痛病）就是由于（ ）污染造成的一种典型的公害病。", "options": {"A": "镉", "B": "铅", "C": "砷", "D": "汞"}, "answer": "A", "uncertain": false}, {"id": 77, "type": "single", "content": "公共营养师的职业道德是( )", "options": {"A": "一种理想", "B": "工作的类型", "C": "一项具体的工作", "D": "本行业对社会所承担的道德责任"}, "answer": "D", "uncertain": false}, {"id": 78, "type": "single", "content": "国际上以( )为主要千预手段的健康教育及作为采用综合策略的健康促进项目的一个部分而开展的传播活动被称为健康传播活动或项目。", "options": {"A": "媒体传播", "B": "平面传播", "C": "宣教传播", "D": "信息传播"}, "answer": "D", "uncertain": false}, {"id": 79, "type": "single", "content": "目前广为应用的一种食物蛋白质营养价值评价方法是（　　），其不仅适用于单一食物蛋白质的评价，而且可用于混合食物蛋白质的评价。", "options": {"A": "食物氨基酸直接比较法", "B": "经消化率校正后的氨基酸评分法", "C": "氨基酸评分法", "D": "蛋白质功效比值"}, "answer": "C", "uncertain": false}, {"id": 80, "type": "single", "content": "敌百虫属于（ ）。", "options": {"A": "有机氯农药", "B": "有机磷农药", "C": "氨基甲酸脂类", "D": "拟除虫菊醋类"}, "answer": "B", "uncertain": false}, {"id": 81, "type": "single", "content": "坚果类食物的蛋白质含量为（ ）。", "options": {"A": "10％~15％", "B": "15％~30％", "C": "20％~30％", "D": "30％~40％"}, "answer": "B", "uncertain": false}, {"id": 82, "type": "single", "content": "测量（ ）部位的皮褶厚度可以代表个体躯干部分的皮下脂肪堆积情况。", "options": {"A": "上臂肱三头肌", "B": "肩胛下角", "C": "躯干", "D": "腰腹"}, "answer": "B", "uncertain": false}, {"id": 83, "type": "single", "content": "膳食营养管理的主要内容不包括（ ）。", "options": {"A": "计划膳食", "B": "膳食评价", "C": "膳食改善", "D": "降低患相关疾病的风险"}, "answer": "D", "uncertain": false}, {"id": 84, "type": "single", "content": "一般要求加热食品的中心温度至少应达到( )。", "options": {"A": "50℃", "B": "60℃", "C": "70℃", "D": "80℃"}, "answer": "C", "uncertain": false}, {"id": 85, "type": "single", "content": "在进行上臂围测量时，被测试者不应（ ）。", "options": {"A": "肌肉应处于紧张状态，以方便测量。", "B": "充分裸露左上肢，手臂自然下垂，两眼平视前方。", "C": "自然站立，体重平均落在两腿上。", "D": "听从测试人员的口令，以利于工作的进行。"}, "answer": "A", "uncertain": false}, {"id": 86, "type": "single", "content": "接受预防接种属于（ ）。", "options": {"A": "预防性行为", "B": "保健行为", "C": "日常健康行为", "D": "改变危害健康的行为"}, "answer": "B", "uncertain": false}, {"id": 87, "type": "single", "content": "记账法（ ）计算出平均每人每日的食物消费量。", "options": {"A": "需要", "B": "不需要", "C": "都可以", "D": "无法判断"}, "answer": "A", "uncertain": false}, {"id": 88, "type": "single", "content": "男性生殖系统中产生精子的部位是( )。", "options": {"A": "睾丸", "B": "附睾", "C": "输精管", "D": "射精管"}, "answer": "A", "uncertain": false}, {"id": 89, "type": "single", "content": "小红食用富含维生素A及维生素A原的食物一段时间，但是仍存在维生素A缺乏的现象，最有可能的原因是（ ）。", "options": {"A": "食道功能障碍", "B": "胃功能障碍", "C": "肠道功能障碍", "D": "肝脏功能障碍"}, "answer": "C", "uncertain": false}, {"id": 90, "type": "single", "content": "以下都属于微量元素的是 ( )。", "options": {"A": "铁、碘、镁", "B": "钙、锌、钼", "C": "氟、钴、钾", "D": "铁、铜、硒"}, "answer": "D", "uncertain": false}, {"id": 91, "type": "single", "content": "学龄前儿童蛋白质来源中动物性蛋白质应占总量的( )。", "options": {"A": "30.0%", "B": "40.0%", "C": "50.0%", "D": "60.0%"}, "answer": "C", "uncertain": false}, {"id": 92, "type": "single", "content": "称重记账法调查对象的基本内容不包括下列（ ）。", "options": {"A": "个人家庭基本情况", "B": "住址", "C": "联系方式", "D": "身高"}, "answer": "D", "uncertain": false}, {"id": 93, "type": "single", "content": "维持机体能量的摄入与消耗的（ ）的状态是健康的基础。", "options": {"A": "摄入量＞消耗量", "B": "摄入量＜消耗量", "C": "摄入量＝消耗量的动态平衡", "D": "摄入量＝消耗量的静态平衡"}, "answer": "C", "uncertain": false}, {"id": 94, "type": "single", "content": "（ ）是脑卒中最主要的危险因素。", "options": {"A": "冠心病", "B": "高血压", "C": "糖尿病", "D": "吸烟"}, "answer": "B", "uncertain": false}, {"id": 95, "type": "single", "content": "少年期或青春期一般指( )。", "options": {"A": "6岁~12岁", "B": "13岁~17岁", "C": "10岁~15岁", "D": "15岁~17岁"}, "answer": "B", "uncertain": false}, {"id": 96, "type": "single", "content": "营养干预的步骤是（　　）。", "options": {"A": "社区诊断，制定目标，营养干预计划和选择，确定目标人群", "B": "制定目标，社区诊断，确定目标人群，营养干预计划和选择", "C": "社区诊断，制定目标，确定目标人群，营养干预计划和选择", "D": "确定目标人群，制定目标，社区诊断，营养干预计划和选择"}, "answer": "C", "uncertain": false}, {"id": 97, "type": "single", "content": "维生素C（ ）。", "options": {"A": "增加尿钙排出", "B": "促进钙吸收和增加骨钙储存", "C": "减少尿钙排除", "D": "保证骨正常生长和重建"}, "answer": "B", "uncertain": false}, {"id": 98, "type": "single", "content": "下列不属于数据库包含的变量的是（ ）。", "options": {"A": "调查对象编码", "B": "食物编码", "C": "食物颜色", "D": "食物重量"}, "answer": "C", "uncertain": false}, {"id": 99, "type": "single", "content": "首次推出营养素供给量的是（ ）。", "options": {"A": "英国学者", "B": "美国学者", "C": "加拿大学者", "D": "日本学者"}, "answer": "B", "uncertain": false}, {"id": 100, "type": "single", "content": "在进行婴幼儿坐高测量时，应（ ）。", "options": {"A": "使用软尺直接测量婴幼儿坐在椅子上时上身的长度。", "B": "使婴儿站立于身高测量仪上测量。", "C": "使婴幼儿仰卧于标准量床地板中线上进行测量。", "D": "让婴幼儿安定地位于体重秤中央。"}, "answer": "C", "uncertain": false}, {"id": 101, "type": "single", "content": "食品容器和包装材料的主要作用不包括（　　）。", "options": {"A": "保护食品免遭污染、延长食品的货架寿命", "B": "有利于食品运输、储存和销售", "C": "改善营养成分，促进膳食健康", "D": "美化食品、促进食欲"}, "answer": "C", "uncertain": false}, {"id": 102, "type": "single", "content": "下列属于餐次、能量比例不绝对的是（ ）。", "options": {"A": "固定饮食习惯的成年人", "B": "固定饮食习惯的老年人", "C": "3~6岁儿童", "D": "青少年"}, "answer": "C", "uncertain": false}, {"id": 103, "type": "single", "content": "关于道德的说法中，正确的是 ( )。", "options": {"A": "人类道德是主观思考的产物，没有客观依据", "B": "每个人各有各的道德观念，以共同道德要求他人是不正确的", "C": "道德是调节人与人之间关系的特殊行为规范", "D": "道德同法律一样，必须在外在规范的约束下才能发挥作用"}, "answer": "C", "uncertain": false}, {"id": 104, "type": "single", "content": "营养教育效果评价近期效果指（ ）。", "options": {"A": "人们营养健康状况和生活质量的变化", "B": "人们身高、体重的变化", "C": "目标人群的知识、态度、信息、服务的变化", "D": "行为和相关危险因素的变化"}, "answer": "C", "uncertain": false}, {"id": 105, "type": "single", "content": "眼球壁的纤维膜分为角膜和( )。", "options": {"A": "巩膜", "B": "结膜", "C": "虹膜", "D": "视网膜"}, "answer": "A", "uncertain": false}, {"id": 106, "type": "single", "content": "蔗糖摄入过多的危害主要是 ( )。", "options": {"A": "冠心病", "B": "糖尿病", "C": "龋齿", "D": "三者都包括"}, "answer": "D", "uncertain": false}, {"id": 107, "type": "single", "content": "造成食物中毒的细菌中，具有嗜盐性的是（　　）。", "options": {"A": "变形杆菌", "B": "副溶血性弧菌", "C": "沙门菌", "D": "葡萄球菌"}, "answer": "B", "uncertain": false}, {"id": 108, "type": "single", "content": "孕妇严重锌缺乏可出现胚胎畸形，出生时小样儿，出生后锌缺乏可导致（ ）的发生。", "options": {"A": "骨软化病", "B": "佝偻病", "C": "侏儒症", "D": "坏血病"}, "answer": "C", "uncertain": false}, {"id": 109, "type": "single", "content": "真值是指（ ）。", "options": {"A": "以最小的差异重复测定一个个体的能力。", "B": "尽可能使所测值代表真实值的能力。", "C": "最能反映被测个体体格的值。", "D": "多人测量值的平均数。"}, "answer": "C", "uncertain": false}, {"id": 110, "type": "single", "content": "膳食调查结果分析（ ）计算蛋白质的食物来源分配。", "options": {"A": "需要", "B": "不需要", "C": "都可以", "D": "无法判断"}, "answer": "A", "uncertain": false}, {"id": 111, "type": "single", "content": "植物蛋白质中，赖氨酸、蛋氨酸、苏氨酸和（ ）含量相对较低，所以营养价值也相对较低。", "options": {"A": "异亮氨酸", "B": "亮氨酸", "C": "色氨酸", "D": "缬氨酸"}, "answer": "C", "uncertain": false}, {"id": 112, "type": "single", "content": "空腹血糖调节受损的诊断标准（ ）。", "options": {"A": "空腹静脉血糖6.1~7.0 mmol/L", "B": "空腹静脉血糖<6.1 mmol/L", "C": "空腹静脉血糖≥7.0 mmol/L", "D": "空腹静脉血糖<7.0 mmol/L"}, "answer": "A", "uncertain": false}, {"id": 113, "type": "single", "content": "汞是强蓄积性毒物，在人体内可长期存在，汞以（　　）形式存在食物中是，对人体危害最大。", "options": {"A": "有机汞", "B": "无机汞", "C": "金属汞", "D": "以上所有"}, "answer": "A", "uncertain": false}, {"id": 114, "type": "single", "content": "职业道德，就是从事一定职业的人，在工作和劳动过程中，所遵守的，与职业活动紧密相关的是( )", "options": {"A": "道德情操", "B": "道德品质", "C": "道德原则和规范的总和", "D": "以上都是"}, "answer": "D", "uncertain": false}, {"id": 115, "type": "single", "content": "硒缺乏可导致（ ）。", "options": {"A": "克山病", "B": "贫血", "C": "克汀病", "D": "奶碱综合征"}, "answer": "A", "uncertain": false}, {"id": 116, "type": "single", "content": "维生素A含量丰富的食物是（ ）。", "options": {"A": "鸡肝", "B": "猪肉", "C": "玉米", "D": "山药"}, "answer": "A", "uncertain": false}, {"id": 117, "type": "single", "content": "下列选项中老年人一般会升高的指标是( )。", "options": {"A": "代谢功能", "B": "消化系统功能", "C": "心率", "D": "高血压患病率"}, "answer": "D", "uncertain": false}, {"id": 118, "type": "single", "content": "如果一幼儿园群体能量需要目标为1300kcal，则早餐和早点能量目标为（ ）Kcal。", "options": {"A": "260", "B": "390", "C": "585", "D": "650"}, "answer": "B", "uncertain": false}, {"id": 119, "type": "single", "content": "B淋巴细胞分化成熟的场所是( )。", "options": {"A": "脾脏", "B": "脊髓", "C": "骨髓", "D": "胸腺"}, "answer": "C", "uncertain": false}, {"id": 120, "type": "single", "content": "在进行食品产品宣传时，幻灯片的优点不包括（　　）。", "options": {"A": "形象直观", "B": "信息量小", "C": "清晰准确", "D": "重点突出"}, "answer": "B", "uncertain": false}, {"id": 122, "type": "single", "content": "由于蛋白质缺乏引起的凹陷性水肿，出现病征最明显的部位是（ ）。", "options": {"A": "腹部", "B": "面部", "C": "全身", "D": "下肢"}, "answer": "D", "uncertain": false}, {"id": 123, "type": "single", "content": "目前获得个体膳食摄入量资料最常用的一种调查方法是( )。", "options": {"A": "24小时回顾法", "B": "称重法", "C": "记账法", "D": "食物频率问卷法"}, "answer": "A", "uncertain": false}, {"id": 124, "type": "single", "content": "新鲜奶在低温真空条件下浓缩，除去约（ ）的水分，再经灭菌而成，称为（ ）。", "options": {"A": "2/3;甜炼乳", "B": "1/3;甜炼乳", "C": "1/3;淡炼乳", "D": "2/3;淡炼乳"}, "answer": "D", "uncertain": false}, {"id": 125, "type": "single", "content": "下列叙述正确的是（ ）。", "options": {"A": "传统的24小时回顾法调查不统计调味品的摄入量", "B": "膳食史法被广泛用于营养与慢性病的流行病学调查", "C": "24小时回顾法只需要调查被调查者1天的膳食摄入就可以了", "D": "记账法适用于幼儿园、学校等集体单位的膳食调查，不适用于家庭"}, "answer": "B", "uncertain": false}, {"id": 126, "type": "single", "content": "食物中某营养素含量=摄入的食物量（g）×（ ）。", "options": {"A": "可食部分比例×100g食物中某营养素含量÷100", "B": "可食部分比例×100g食物中某营养素含量", "C": "100g食物中某营养素含量÷100", "D": "100g食物中某营养素含量"}, "answer": "A", "uncertain": false}, {"id": 127, "type": "single", "content": "综合信息调查表中，女性不同于男性的健康状况信息是（　　）。", "options": {"A": "家族疾病史", "B": "近期体检信息", "C": "生化指标", "D": "生育史"}, "answer": "D", "uncertain": false}, {"id": 128, "type": "single", "content": "下列膳食调查方法比较适用于营养门诊的是（ ）", "options": {"A": "查账法", "B": "称重法", "C": "24小时回顾法", "D": "食物摄入频率法"}, "answer": "C", "uncertain": false}, {"id": 129, "type": "single", "content": "RNI是能满足人群中（ ）的个体需要的摄入水平（假定人群的需要量呈正态分布），如果用RNI作为切点，把摄入量低于RNI的个体判断为摄入不足，结果必然严重的（ ）了摄入不足的比例。", "options": {"A": "30%~40%；低估", "B": "40%~55%；高估", "C": "80%~90%；低估", "D": "97%~98%；高估"}, "answer": "D", "uncertain": false}, {"id": 130, "type": "single", "content": "孕期尿中葡萄糖、氨基酸和水溶性维生素代谢终产物排出量增加，其中，（ ）的排出量可增加10倍以上。", "options": {"A": "葡萄糖", "B": "氨基酸", "C": "烟酸", "D": "吡哆醛"}, "answer": "A", "uncertain": false}, {"id": 131, "type": "single", "content": "为了避免食品在加工过程中受到污染，下列选项中不应采取的措施是( )。", "options": {"A": "用于食品原料、半成品、 成品的容器和工具分开放置和使用", "B": "不在食品处理区内从事可能污染食品的活动", "C": "不在食品处理区内从事食品加工、 餐用具清洗消毒活动", "D": "接触食品的容器和工具不应直接放置在地面上或者接触不洁物"}, "answer": "C", "uncertain": false}, {"id": 132, "type": "single", "content": "鱼、禽、肉、蛋、奶及豆类是饮食蛋白质的主要来源，每天供给奶类不低于300ml，其他（ ）。", "options": {"A": "100~150g", "B": "150~200g", "C": "200~250g", "D": "250~300g"}, "answer": "C", "uncertain": false}, {"id": 133, "type": "single", "content": "为确保饼干的生产质量，在饼干生产过程进行抽样分析，对于每次分析的采样量，需遵循（　　）原则。", "options": {"A": "系统抽样", "B": "分层抽样", "C": "随机抽样", "D": "整群抽样"}, "answer": "C", "uncertain": false}, {"id": 134, "type": "single", "content": "GI在（ ）范围内为中GI食物", "options": {"A": "55~70", "B": "45~60", "C": "65~80", "D": "45~55"}, "answer": "A", "uncertain": false}, {"id": 135, "type": "single", "content": "理论上，（ ）不应用于个体配餐。", "options": {"A": "EAR", "B": "RNI", "C": "AI", "D": "UL"}, "answer": "A", "uncertain": false}, {"id": 136, "type": "single", "content": "实施营养改善项的步骤是（ ）。", "options": {"A": "制定计划、分析营养问题、执行计划、项目评价", "B": "确定项目目标、分析营养问题、制定计划、执行计划、项目评价", "C": "分析营养问题、确定项目目标、制定计划、执行计划、项目评价", "D": "分析营养问题、确定项目目标、制定计划、执行计划、项目评价"}, "answer": "C", "uncertain": false}, {"id": 140, "type": "single", "content": "营养指导师在进行饮食行为与健康的宣讲过程中，不能采用以下（ ）方法", "options": {"A": "讲授", "B": "演示", "C": "以促销为目的赠送保健品", "D": "参观实验"}, "answer": "C", "uncertain": false}, {"id": 141, "type": "single", "content": "社区常见的营养问题不包括（　　）。", "options": {"A": "意外伤害", "B": "缺铁性贫血", "C": "营养不良", "D": "肥胖"}, "answer": "A", "uncertain": false}, {"id": 142, "type": "single", "content": "营养质量指数值（INQ）的大小可以反映食物能量与营养素间的关系，营养质量指数的计算公式为（　　）。", "options": {"A": "食物营养质量指数＝营养素密度/能量密度", "B": "食物营养质量指数＝能量密度/营养素密度", "C": "食物营养质量指数＝营养素含量/能量密度", "D": "食物营养质量指数＝能量密度/营养素含量"}, "answer": "A", "uncertain": false}, {"id": 144, "type": "single", "content": "盛装尿液的容器需要放置在（ ）。", "options": {"A": "4℃冰箱中", "B": "-20℃冰箱中", "C": "-40℃冰柜中", "D": "-80℃冰柜中"}, "answer": "A", "uncertain": false}, {"id": 145, "type": "single", "content": "构成人体的基本单位是( )。", "options": {"A": "细胞", "B": "组织", "C": "器官", "D": "系统"}, "answer": "A", "uncertain": false}, {"id": 146, "type": "single", "content": "大肠菌群最可能数主要用于指示（　　）。", "options": {"A": "食品营养价值", "B": "食品中毒潜在风险", "C": "食品保质期", "D": "食品微生物污染"}, "answer": "C", "uncertain": false}, {"id": 147, "type": "single", "content": "做细菌学检查的粪便标本应采集于（ ）中。", "options": {"A": "灭菌有盖的容器", "B": "有盖的容器", "C": "灭菌无盖的容器", "D": "灭菌开口的容器"}, "answer": "A", "uncertain": false}, {"id": 148, "type": "single", "content": "传播是人类通过( )交流信息，以期发生相应变化的活动。", "options": {"A": "符号和示意", "B": "语言和媒介", "C": "语言和符号", "D": "符号和媒介"}, "answer": "D", "uncertain": false}, {"id": 150, "type": "single", "content": "我国食物成分表的数值通常是每100g（ ）食物的营养素含量。", "options": {"A": "全部", "B": "可食部", "C": "净重", "D": "毛重"}, "answer": "B", "uncertain": false}, {"id": 151, "type": "single", "content": "早、中、晚三餐的所有食物提供的能量占比应尽量接近（　　）。", "options": {"A": "早餐20%,午餐50%,晚餐30%", "B": "早餐30%,午餐50%,晚餐20%", "C": "早餐30%,午餐30%,晚餐40%", "D": "早餐30%,午餐40%,晚餐30%"}, "answer": "D", "uncertain": false}, {"id": 152, "type": "single", "content": "能量密度可用于评估食物供给能量的多少，能量密度的计算公式为（　　）。", "options": {"A": "能量密度＝能量推荐摄入量/一定量食物提供的能量值", "B": "能量密度＝一定量食物提供的能量值/能量推荐摄入量", "C": "能量密度＝食物提供的能量值/能量推荐摄入量", "D": "能量密度＝一定量食物提供的能量值/食物摄入量"}, "answer": "B", "uncertain": false}, {"id": 153, "type": "single", "content": "职业道德是从事一定职业的人们在职业活动所应遵循的职业（ ）的总称。", "options": {"A": "道德规范", "B": "行为规范", "C": "准则规范", "D": "行为准则"}, "answer": "B", "uncertain": false}, {"id": 154, "type": "single", "content": "鱼油多含（ ）；椰子和棕榈油（ ）高。", "options": {"A": "不饱和脂肪酸；不饱和脂肪酸", "B": "饱和脂肪酸；饱和脂肪酸", "C": "不饱和脂肪酸；饱和脂肪酸", "D": "饱和脂肪酸；不饱和脂肪酸"}, "answer": "C", "uncertain": false}, {"id": 156, "type": "single", "content": "如果一幼儿园群体能量需要目标为1300kcal，则其儿童膳食碳水化合物摄入量目标为（ ）g。", "options": {"A": "190", "B": "195", "C": "185", "D": "180"}, "answer": "B", "uncertain": false}, {"id": 157, "type": "single", "content": "在使用弹簧刺血针取血时，刺入深度一般为（ ）左右,视皮肤厚薄而定。", "options": {"A": "1 mm", "B": "2 mm", "C": "3 mm", "D": "4 mm"}, "answer": "B", "uncertain": false}, {"id": 158, "type": "single", "content": "儿童的身高是指（ ）。", "options": {"A": "头顶至双肩长", "B": "从双侧眉弓上缘至腿长", "C": "头顶至臀长", "D": "头顶至足底的距离"}, "answer": "D", "uncertain": false}, {"id": 159, "type": "single", "content": "动物性食物以（ ）的脂肪含量最丰富。", "options": {"A": "鱼肉类", "B": "贝类", "C": "禽肉类", "D": "畜肉类"}, "answer": "D", "uncertain": false}, {"id": 160, "type": "single", "content": "食品中检出( )，表示食品曾受到人和动物的粪便污染。", "options": {"A": "布鲁杆菌属", "B": "伤寒杆菌", "C": "大肠杆菌", "D": "副溶血弧菌"}, "answer": "C", "uncertain": false}, {"id": 161, "type": "single", "content": "儿童脂肪提供的能量占总能来的百分比在( )时接近成人推荐值。", "options": {"A": "3岁~4岁", "B": "4岁~6岁", "C": "5岁~7岁", "D": "7岁~8岁"}, "answer": "B", "uncertain": false}, {"id": 162, "type": "single", "content": "女性围绝经期（更年期）一般始于( )。", "options": {"A": "40岁", "B": "45岁", "C": "50岁", "D": "55岁"}, "answer": "B", "uncertain": false}, {"id": 163, "type": "single", "content": "乳母膳食摄入量对乳汁中( )的影响不明显", "options": {"A": "钙", "B": "乳糖", "C": "维生素A", "D": "维生素B1"}, "answer": "B", "uncertain": false}, {"id": 164, "type": "single", "content": "我国现行的《食品安全法》自（ ）起正式实施。", "options": {"A": "2009-02-28 00:00:00", "B": "2015-04-24 00:00:00", "C": "2018-12-29 00:00:00", "D": "2015-10-01 00:00:00"}, "answer": "D", "uncertain": false}, {"id": 165, "type": "single", "content": "健康传播诞生于( )。", "options": {"A": "20世纪60年代", "B": "20世纪70年代", "C": "20世纪80年代", "D": "20世纪90年代"}, "answer": "B", "uncertain": false}, {"id": 166, "type": "single", "content": "体重是指（ ）。", "options": {"A": "身体各部分的重量总和。", "B": "头顶至臀部的重量。", "C": "头顶至腹部的重量。", "D": "身体核心区域的重量。"}, "answer": "A", "uncertain": false}, {"id": 168, "type": "single", "content": "职业道德要求从业者要保证产品质量和( )质量，注重信誉，树立行业形象、信用和声誉。", "options": {"A": "生产", "B": "服务", "C": "环境", "D": "品牌"}, "answer": "B", "uncertain": false}, {"id": 169, "type": "single", "content": "中枢免疫器官包括胸腺和( )。", "options": {"A": "脾脏", "B": "脊髓", "C": "骨髓", "D": "淋巴结"}, "answer": "C", "uncertain": false}, {"id": 170, "type": "single", "content": "如果膳食计划提供的营养素仅达到EAR水平，那将有（　　）的概率不能满足个体的营养需要。", "options": {"A": "0.3", "B": "0.4", "C": "0.5", "D": "0.6"}, "answer": "C", "uncertain": false}, {"id": 171, "type": "single", "content": "人体内硒主要参与构成的酶不包括( )。", "options": {"A": "硫氧还蛋白还原酶", "B": "谷胱甘肽过氧化物酶", "C": "碘甲腺原氨酸脱碘酶", "D": "超氧化物歧化酶"}, "answer": "D", "uncertain": false}, {"id": 172, "type": "single", "content": "在缺铁性贫血的几个阶段中的（ ）仍没有表现出临床症状。", "options": {"A": "巨幼红细胞病变期", "B": "铁减少期", "C": "红细胞生成缺铁期", "D": "缺铁性贫血期"}, "answer": "B", "uncertain": false}, {"id": 173, "type": "single", "content": "蛋白质供能比等于（ ）。", "options": {"A": "蛋白质摄入量*4/总能量摄入量*100％", "B": "蛋白质摄入量/总能量摄入量*100％", "C": "蛋白质摄入量*9/总能量摄入量*100％", "D": "蛋白质摄入量*8/总能量摄入量*100％"}, "answer": "A", "uncertain": false}, {"id": 175, "type": "single", "content": "目前确定的必需脂肪酸是( )。", "options": {"A": "亚油酸、花生四烯酸、a - 亚麻酸", "B": "亚油酸、a - 亚麻酸", "C": "亚油酸、花生四酸", "D": "a - 亚麻酸、花生四烯酸"}, "answer": "B", "uncertain": false}, {"id": 176, "type": "single", "content": "称重记账法调查中（ ）对食物的名称及主要原料进行详细登记。", "options": {"A": "不需要", "B": "需要", "C": "都可以", "D": "无法判断"}, "answer": "B", "uncertain": false}, {"id": 177, "type": "single", "content": "《食品营养标签管理规范》是从哪一年开始实施的", "options": {"A": "2011", "B": "2008", "C": "2010", "D": "2007"}, "answer": "B", "uncertain": false}, {"id": 178, "type": "single", "content": "幼儿期是指( )。", "options": {"A": "0~1岁", "B": "1~2岁", "C": "1~3岁", "D": "1~4岁"}, "answer": "C", "uncertain": false}, {"id": 179, "type": "single", "content": "我国常用的雾化技术不包括（ ）。", "options": {"A": "气流喷嘴式雾化", "B": "压力式喷嘴雾化", "C": "旋转式雾化", "D": "过热蒸汽喷雾干燥"}, "answer": "D", "uncertain": false}, {"id": 180, "type": "single", "content": "下列属于自填式调查的特点的是（ ）。", "options": {"A": "节省时间", "B": "回收率高", "C": "内容准确", "D": "浪费人力物力"}, "answer": "A", "uncertain": false}, {"id": 181, "type": "single", "content": "公共营养师应当以（ ）为己任。", "options": {"A": "改善我国居民营养状况及身体素质", "B": "改善我国居民营养状况", "C": "改善我国居民身体素质", "D": "改善我国居民身心素质"}, "answer": "A", "uncertain": false}, {"id": 182, "type": "single", "content": "家庭每种食物实际消费量等于（ ）。", "options": {"A": "结存量+食物总量-废弃总量", "B": "结存量+废弃总量-食物总量", "C": "结存量+食物总量-废弃总量-剩余总量", "D": "结存量-废弃总量-食物总量-剩余总量"}, "answer": "C", "uncertain": false}, {"id": 183, "type": "single", "content": "下列属于信函调查的特点的是（ ）。", "options": {"A": "覆盖面窄", "B": "内容准确", "C": "回收率低", "D": "节省成本"}, "answer": "C", "uncertain": false}, {"id": 185, "type": "single", "content": "准备制定职工食堂一周食谱时，将职工活动强度分为3级，机关工作人员、司机、建筑工作人员分布属于（　　）。", "options": {"A": "中身体活动者；轻身体活动者；重身体活动者", "B": "轻身体活动者；中身体活动者；重身体活动者", "C": "重身体活动者；轻身体活动者；中身体活动者", "D": "轻身体活动者；重身体活动者；中身体活动者"}, "answer": "B", "uncertain": false}, {"id": 186, "type": "single", "content": "蛋白质经（ ）的消化，分解成可吸收氨基酸和小肽才容易被吸收。", "options": {"A": "大肠", "B": "小肠", "C": "胃", "D": "口腔"}, "answer": "B", "uncertain": false}, {"id": 187, "type": "single", "content": "黄曲毒素污染最重的食品是( )；黄曲霉毒素主要损害的部位是 ( )。", "options": {"A": "奶类；神经", "B": "畜禽肉类；肾脏", "C": "粮油及制品；肝脏", "D": "水产品；膀胱"}, "answer": "C", "uncertain": false}, {"id": 188, "type": "single", "content": "膳食纤维主要存在于（　　）类食物中。", "options": {"A": "肉类", "B": "奶制品", "C": "谷物", "D": "水果"}, "answer": "C", "uncertain": false}, {"id": 189, "type": "single", "content": "食品容器和包装材料的主要卫生问题不包括（　　）。", "options": {"A": "搪瓷、陶瓷、玻璃中的有害金属（铅、镉等）可能溶出到盛装的食品中", "B": "食品原料在销售、储存、加工等过程中遭受外部污染物污染", "C": "竹、木、纸、布等传统材料渗水性强，容易吸水和被微生物污染", "D": "高分子化合物中添加剂或加工助剂残留、低分子降解产物污染食物"}, "answer": "B", "uncertain": false}, {"id": 190, "type": "single", "content": "下列食品及其制品可能导致过敏反应的是（ ），在制作标签时应加以标示。①甲壳类动物及其制品②蛋类及其制品③花生及其制品④坚果及其果仁类制品", "options": {"A": "①②③④", "B": "①②③", "C": "①③④", "D": "②③④"}, "answer": "A", "uncertain": false}, {"id": 191, "type": "single", "content": "在进行24小时回顾法调查时（ ）知道调查对象调查时刻以前24h内摄入的所有食物的数量及种类。", "options": {"A": "不需要", "B": "需要", "C": "都可以", "D": "视被调查者的记忆情况而定"}, "answer": "B", "uncertain": false}, {"id": 192, "type": "single", "content": "开展社区营养干预措施需遵循的基本原则有（　　）。", "options": {"A": "考虑对解决营养问题的作用大小", "B": "考虑营养问题的重要程度", "C": "考虑实施干预的难易程度等", "D": "以上均是"}, "answer": "D", "uncertain": false}, {"id": 193, "type": "single", "content": "健康的生活方式不包括（　　）。", "options": {"A": "适量运动", "B": "快节奏生活", "C": "定期体检", "D": "足够睡眠"}, "answer": "B", "uncertain": false}, {"id": 194, "type": "single", "content": "幼儿园儿童食谱设计中宏量营养素的供给比例中碳水化合物一般设为（ ）。", "options": {"A": "0.3", "B": "0.4", "C": "0.5", "D": "0.6"}, "answer": "D", "uncertain": false}, {"id": 195, "type": "single", "content": "膳食调查结果分析（ ）计算各种食物来源。", "options": {"A": "需要", "B": "不需要", "C": "都可以", "D": "无法判断"}, "answer": "A", "uncertain": false}, {"id": 196, "type": "single", "content": "每日200~250g的大米可以为儿童提供（ ）的能量。", "options": {"A": "50％~65％", "B": "40％~55％", "C": "30％~45％", "D": "60％~75％"}, "answer": "A", "uncertain": false}, {"id": 198, "type": "single", "content": "维生素B2缺乏的典型症状为( )。", "options": {"A": "皮肤和牙龈出血", "B": "皮肤干燥", "C": "唇炎和口角炎", "D": "腹泻"}, "answer": "C", "uncertain": false}, {"id": 199, "type": "single", "content": "( )是社区营养工作的具体执行者。", "options": {"A": "家庭", "B": "领导部门", "C": "基层社区卫生人员", "D": "非政府组织"}, "answer": "C", "uncertain": false}, {"id": 200, "type": "single", "content": "准确度是指（ ）。", "options": {"A": "以最小的差异重复测定一个个体的能力。", "B": "尽可能使所测值代表真实值的能力。", "C": "最能反映被测个体体格的值。", "D": "多人测量值的平均数。"}, "answer": "B", "uncertain": false}, {"id": 201, "type": "single", "content": "下列哪种情况可能与营养缺乏有关（ ）", "options": {"A": "肥胖", "B": "高血压", "C": "糖尿病", "D": "消瘦"}, "answer": "D", "uncertain": false}, {"id": 202, "type": "single", "content": "哺乳期乳母的各种营养需求比妊娠期孕妇（ ）。", "options": {"A": "低", "B": "高", "C": "一样", "D": "妊娠早期高，妊娠晚期低"}, "answer": "B", "uncertain": false}, {"id": 203, "type": "single", "content": "关于《中国食物成分表》中给出的数据说法正确的是（ ）。", "options": {"A": "每克食物营养素的含量", "B": "每100克生的食物中营养素的含量", "C": "每克熟的食物中营养素的含量", "D": "每100克生的食物可食部分中营养素的含量"}, "answer": "D", "uncertain": false}, {"id": 205, "type": "single", "content": "对婴幼儿进行体重测量时，采用（ ）进行测量。", "options": {"A": "成人体重计", "B": "地秤", "C": "婴幼儿体重秤", "D": "以上都可以"}, "answer": "C", "uncertain": false}, {"id": 207, "type": "single", "content": "菌落总数主要用于评估（　　）。", "options": {"A": "食品营养价值", "B": "食品微生物污染", "C": "食品中毒潜在风险", "D": "食品保质期"}, "answer": "B", "uncertain": false}, {"id": 208, "type": "single", "content": "做粪胆原定量时，应连续收集粪便的天数和粪便混匀送检的克数分别是（ ）。", "options": {"A": "3天和20g", "B": "4天和30g", "C": "3天和30g", "D": "4天和20g"}, "answer": "A", "uncertain": false}, {"id": 211, "type": "single", "content": "分析社区卫生基本资料时，对数值变量进行统计分析时最常用的指标是（　　）。", "options": {"A": "相对数", "B": "标准差", "C": "卡方检验", "D": "秩"}, "answer": "B", "uncertain": false}, {"id": 212, "type": "single", "content": "一般产后( )的乳汁称为过渡乳。", "options": {"A": "5天~10天", "B": "6天~12天", "C": "7天~15天", "D": "10天~20天"}, "answer": "A", "uncertain": false}, {"id": 213, "type": "single", "content": "肱三头肌皮褶厚度测量时，在标记点（ ）处，垂直方向用左手拇指和食指、中指将皮肤和皮下组织夹提起来。", "options": {"A": "上方约1cm", "B": "上方约2cm", "C": "下方约1cm", "D": "下方约2cm"}, "answer": "B", "uncertain": false}, {"id": 214, "type": "single", "content": "某60岁妇女，近年经常出现腰背痛。走路感觉腿无力。特别是上楼梯时吃力，骨盆有明显压痛，考虑是( )缺乏。", "options": {"A": "维生素C", "B": "锌", "C": "维生素A", "D": "维生素D"}, "answer": "D", "uncertain": false}, {"id": 216, "type": "single", "content": "对公共营养师而言，综合信息中有两点必须调查，这两点是（ ）。", "options": {"A": "膳食和行为相关信息", "B": "膳食和遗传相关信息", "C": "遗传和行为相关信息", "D": "膳食和疾病相关信息"}, "answer": "A", "uncertain": false}, {"id": 217, "type": "single", "content": "肥胖体型舞蹈演员能量需要量参考值（ ）kcal/kg•d。", "options": {"A": "50", "B": "45", "C": "40", "D": "35"}, "answer": "D", "uncertain": false}, {"id": 218, "type": "single", "content": "古希腊名医西伯克拉底用海藻治疗甲状腺肿主要是因为海藻（ ）。", "options": {"A": "富含蛋白质", "B": "富含锌", "C": "富含碘", "D": "富含铁"}, "answer": "C", "uncertain": false}, {"id": 219, "type": "single", "content": "用称量法进行膳食调查时，食物重量的记录应精确到（ ）。", "options": {"A": "微克", "B": "毫克", "C": "克", "D": "千克"}, "answer": "C", "uncertain": false}, {"id": 220, "type": "single", "content": "下列关于构成比的叙述，错误的是（　　）。", "options": {"A": "构成比的分子包含在分母部分", "B": "构成比能够说明某事件发生的频率", "C": "构成比分母包含了分子", "D": "构成比说明各个组分所占的比重"}, "answer": "B", "uncertain": false}, {"id": 221, "type": "single", "content": "有机磷农药的主要急性毒性是（ ）。", "options": {"A": "抑制胆碱脂酶的活性", "B": "血液系统障碍", "C": "致癌性", "D": "肝脏损害"}, "answer": "A", "uncertain": false}, {"id": 222, "type": "single", "content": "是葡萄糖耐量因子的重要组成成分的矿物质是( )。", "options": {"A": "铬", "B": "铁", "C": "钙", "D": "锰"}, "answer": "A", "uncertain": false}, {"id": 223, "type": "single", "content": "中等运动强度的能量消耗为（　　）kcal/min。", "options": {"A": "4~7", "B": "5~10", "C": "3~7", "D": "10~20"}, "answer": "A", "uncertain": false}, {"id": 224, "type": "single", "content": "下列属于可以补碘的食物的是（ ）。", "options": {"A": "鱼肉", "B": "海带", "C": "鸡肉", "D": "豆腐泡"}, "answer": "B", "uncertain": false}, {"id": 225, "type": "single", "content": "儿童脂肪提供的能量占总能量的百分比在( )时接近成人推荐值。", "options": {"A": "3岁~4岁", "B": "4岁~6岁", "C": "5岁~7岁", "D": "7岁~8岁"}, "answer": "B", "uncertain": false}, {"id": 226, "type": "single", "content": "二十二碳六烯酸DHA在体内具有降血脂改善血液循环等功效，它是由食物中的 ( )衍生来。", "options": {"A": "花生四烯酸", "B": "亚油酸", "C": "a-亚麻酸", "D": "二十碳五烯酸"}, "answer": "C", "uncertain": false}, {"id": 229, "type": "single", "content": "食物氨基酸直接比较法是以含量最少的（　　）为1，计算出其他氨基酸的相应比值，以此来判断食物的氨基酸比例是否适合人体需要。", "options": {"A": "亮氨酸", "B": "色氨酸", "C": "蛋氨酸", "D": "苏氨酸"}, "answer": "B", "uncertain": false}, {"id": 230, "type": "single", "content": "已知一儿童一日蛋白质摄入量为30g，其中动物蛋白质为10g，则动物蛋白质占全日总蛋白质的( )。", "options": {"A": "0.2", "B": "0.25", "C": "0.3", "D": "0.35"}, "answer": "C", "uncertain": false}, {"id": 231, "type": "single", "content": "《食品安全法》四十五条:食品添加剂应当在（ ）上有必要且经过风险评估证明安全可靠，方可列入允许使用的范围", "options": {"A": "技术", "B": "安全", "C": "生产", "D": "管理"}, "answer": "A", "uncertain": false}, {"id": 232, "type": "single", "content": "可以用于建立数据库和进行数据管理的软件有（ ）：①SQL ；②Excel； ③SPSS； ④EPI； ⑤CSpro", "options": {"A": "①②③④⑤", "B": "①②③④", "C": "②③④⑤", "D": "②③④"}, "answer": "A", "uncertain": false}, {"id": 234, "type": "single", "content": "公共营养师科学求实、精益求精的具体表现为( )", "options": {"A": "时刻为别人着想", "B": "对待工作一丝不苟", "C": "注重自我为中心", "D": "以多做工作为目的"}, "answer": "B", "uncertain": false}, {"id": 235, "type": "single", "content": "市场调查问卷中的性别、学历、满意程度等资料属于（　　）。", "options": {"A": "计量资料", "B": "计数资料", "C": "实验材料", "D": "统计材料"}, "answer": "B", "uncertain": false}, {"id": 237, "type": "single", "content": "按照化学组成分类，蛋白质可以分为单纯蛋白质和（　　）。", "options": {"A": "结合蛋白质", "B": "球状蛋白质", "C": "纤维类蛋白质", "D": "组合蛋白质"}, "answer": "A", "uncertain": false}, {"id": 238, "type": "single", "content": "膳食调查结果计算中，实际消耗的食物生重=（ ）。", "options": {"A": "总食物生重 - 剩余食物熟重", "B": "实际消耗食物熟重 - 剩余食物生重", "C": "总食物生重×食物生/熟比值", "D": "实际消耗食物熟重×食物生/熟比值"}, "answer": "D", "uncertain": false}, {"id": 240, "type": "single", "content": "一行五人相聚为一朋友庆祝生日，他们吃了生日蛋糕后几小时内相继恶心，剧烈而频繁的呕吐，腹部疼痛，同时有腹泻，呈水样便。该食物中毒可能为（ ）。", "options": {"A": "葡萄球菌食物中毒", "B": "副溶血弧菌食物中毒", "C": "肉毒梭菌毒素中毒", "D": "沙门菌食物中毒"}, "answer": "A", "uncertain": false}, {"id": 241, "type": "multi", "content": "下列属于高蛋白质食物的是（ ）。", "options": {"A": "海产品", "B": "畜禽肉类", "C": "大豆及其制品", "D": "蔬菜", "E": "水果"}, "answer": ["A", "B", "C"], "uncertain": false}, {"id": 242, "type": "multi", "content": "世界蒸馏酒一般分为六大类（ ）。", "options": {"A": "白兰地、威士忌、伏特加", "B": "白兰地、黄酒、白酒", "C": "金酒、威士忌、黄酒", "D": "金酒、朗姆酒、白酒", "E": "朗姆酒、黄酒、金酒"}, "answer": ["A", "D"], "uncertain": false}, {"id": 243, "type": "multi", "content": "人类通过摄取动物性、植物性食物获得所需的能量，动物性、植物性食物中所含的营养素可分为（ ）。", "options": {"A": "碳水化合物", "B": "脂肪", "C": "蛋白质", "D": "维生素", "E": "水"}, "answer": ["A", "B", "C", "D", "E"], "uncertain": false}, {"id": 244, "type": "multi", "content": "职业道德是社会道德体系的重要组成部分，它一方面具有社会道德的一般作用，另一方面它又具有自身的特殊作用，具体表现在( )。", "options": {"A": "调节职业交往中从业人员内部以及从业人员与服务对象间的关系", "B": "有助于维护和提高本行业的信誉", "C": "促进本行业的发展", "D": "有助于提高全社会的道德水平", "E": "有得于提高工作效率"}, "answer": ["A", "B", "C", "D"], "uncertain": false}, {"id": 245, "type": "multi", "content": "膳食结构分析需要根据调查对象24h膳食调查结果，计算下列（ ）的摄入量。", "options": {"A": "谷类", "B": "蔬菜和水果类", "C": "奶类", "D": "鱼、禽、肉、蛋类", "E": "豆类"}, "answer": ["A", "B", "C", "D", "E"], "uncertain": false}, {"id": 246, "type": "multi", "content": "下列属于食谱的综合评价内容的是（ ）。", "options": {"A": "食谱的能量和营养素含量评价", "B": "食物的种类和比例", "C": "三种产能营养素的供能比例是否适宜", "D": "三餐能量摄入分配是否合理", "E": "蛋白质来源分布或优质蛋白占总蛋白质的比例是否恰当"}, "answer": ["A", "B", "C", "D", "E"], "uncertain": false}, {"id": 247, "type": "multi", "content": "膳食营养素计算与评价需要的参考标准和计算依据来源（ ）。", "options": {"A": "《中国居民膳食营养素参考摄入量》", "B": "《食品安全国家标准 食品添加剂使用标准》", "C": "《中国食物成分表》", "D": "《食品营养强化剂使用标准》", "E": "《预包装食品营养标签通则》"}, "answer": ["A", "C"], "uncertain": false}, {"id": 248, "type": "multi", "content": "小肠内的消化酶包括( )。", "options": {"A": "胰淀粉酶", "B": "胰脂肪酶", "C": "胰蛋白酶", "D": "糜蛋白酶", "E": "小肠淀粉酶"}, "answer": ["A", "B", "C", "D", "E"], "uncertain": false}, {"id": 249, "type": "multi", "content": "下列属于必需氨基酸的选项包括( )。", "options": {"A": "赖氨酸", "B": "苏氨酸", "C": "亮氨酸", "D": "精氨酸", "E": "异亮氨酸"}, "answer": ["A", "B", "C", "E"], "uncertain": false}, {"id": 250, "type": "multi", "content": "脂肪酸败的指标有（ ）。", "options": {"A": "过氧化值", "B": "K值", "C": "酸价", "D": "三甲胺", "E": "挥发性盐基总氮"}, "answer": ["A", "C"], "uncertain": false}, {"id": 251, "type": "multi", "content": "视网膜上的感光细胞包括( )。", "options": {"A": "视锥细胞", "B": "视杆细胞", "C": "视球细胞", "D": "膜细胞", "E": "结膜细胞"}, "answer": ["A", "B"], "uncertain": false}, {"id": 252, "type": "multi", "content": "乳母最主要的生理特征包括( )。", "options": {"A": "补偿妊娠时所损耗的营养素储备", "B": "促进各器官、系统功能的恢复", "C": "分泌乳汁", "D": "哺育婴儿", "E": "补偿分娩时所损耗的营养素储备"}, "answer": ["A", "B", "C", "D", "E"], "uncertain": false}, {"id": 253, "type": "multi", "content": "不健康生活方式主要有？", "options": {"A": "心理失衡", "B": "吸烟", "C": "生活无规律", "D": "酗酒", "E": "不良饮食习惯"}, "answer": ["A", "B", "C", "D", "E"], "uncertain": false}, {"id": 254, "type": "multi", "content": "维生素A缺乏可出现的症状包括（ ）。", "options": {"A": "干眼病", "B": "口角炎", "C": "皮肤粗糙.", "D": "夜盲", "E": "脚气病"}, "answer": ["A", "C", "D"], "uncertain": false}, {"id": 255, "type": "multi", "content": "设计社区营养干预方案时，需要考虑（　　）。", "options": {"A": "干预的营养问题的重要程度", "B": "干预的难度和可行性", "C": "干预的经济效益", "D": "干预的社区在区域中的地位", "E": "干预的对象"}, "answer": ["A", "B", "C"], "uncertain": false}, {"id": 256, "type": "multi", "content": "维生素B1缺乏原因包括（ ）。", "options": {"A": "摄入不足", "B": "吸收、利用障碍", "C": "需要量增加或消耗过多", "D": "抗硫胺素因子", "E": "慢性乙醇中毒"}, "answer": ["A", "B", "C", "D", "E"], "uncertain": false}, {"id": 257, "type": "multi", "content": "以下不属于目前中国食品药品管理局（SFDA）公布受理的保健食品功能的有（ ）。", "options": {"A": "缓解视疲劳功能", "B": "辅助抑制肿瘤，防癌", "C": "辅助改善认知功能", "D": "促进泌乳功能", "E": "提高缺氧耐受力功能"}, "answer": ["B", "C"], "uncertain": false}, {"id": 258, "type": "multi", "content": "维生素B2缺乏可能会出现（ ）。", "options": {"A": "“地图舌”", "B": "唇炎", "C": "脂溢性皮炎", "D": "阴囊湿疹样皮炎", "E": "暗适应力降低"}, "answer": ["A", "B", "C", "D"], "uncertain": false}, {"id": 259, "type": "multi", "content": "产品分析主要包括（ ）。", "options": {"A": "感官分析和评价", "B": "卫生学检验", "C": "营养成分分析", "D": "功效成分分析", "E": "添加剂分析"}, "answer": ["A", "B", "C", "D", "E"], "uncertain": false}, {"id": 260, "type": "multi", "content": "下列选项中属于脑干组成的是( )。", "options": {"A": "延髓", "B": "脑桥", "C": "小脑", "D": "中脑", "E": "端脑"}, "answer": ["A", "B", "D"], "uncertain": false}, {"id": 261, "type": "multi", "content": "粪便的保存方法包括（　　）。", "options": {"A": "冷藏保存", "B": "冷冻保存", "C": "固定保存", "D": "运送培养基保存", "E": "0.05mol/L盐酸保存"}, "answer": ["A", "B", "C", "D"], "uncertain": false}, {"id": 262, "type": "multi", "content": "下列属于脂类的是（ )。", "options": {"A": "磷脂", "B": "类固醇", "C": "糖脂", "D": "固醇", "E": "乳糖"}, "answer": ["A", "B", "C", "D"], "uncertain": false}, {"id": 263, "type": "multi", "content": "血细胞包括( )。", "options": {"A": "红细胞", "B": "血小板", "C": "单核细胞", "D": "淋巴细胞", "E": "白细胞"}, "answer": ["A", "B", "C", "D", "E"], "uncertain": false}, {"id": 264, "type": "multi", "content": "社区营养教育程序包括（ ）。", "options": {"A": "设计", "B": "选择教育途径和资料", "C": "准备资料和进行预试验", "D": "社区营养教育实施", "E": "社区营养教育评价"}, "answer": ["A", "B", "C", "D", "E"], "uncertain": false}, {"id": 265, "type": "multi", "content": "下列属于低脂肪食物的是（ ）。", "options": {"A": "淀粉", "B": "谷类", "C": "水果", "D": "菌藻类食物", "E": "畜肉类食物"}, "answer": ["A", "B", "C", "D"], "uncertain": false}, {"id": 266, "type": "multi", "content": "综合信息调查表的问题设计时应当避免 （　　）。", "options": {"A": "使用引导性或强制性问题", "B": "提供足够的选项供选择", "C": "使用复杂或不明确的表述", "D": "设置过长或过多的问题", "E": "使用专业术语"}, "answer": ["A", "C", "D", "E"], "uncertain": false}, {"id": 267, "type": "multi", "content": "营养质量指数值（INQ）可直观反映食物能量与营养素间的关系，关于INQ正确的有（　　）。", "options": {"A": "食物营养质量指数（INQ）＝能量密度/营养素密度", "B": "食物营养质量指数（INQ）＝营养素密度/能量密度", "C": "NQ=1，表示食物提供营养素的能力与提供能量的能力相当", "D": "INQ<1，表示该食物提供营养素的能力小于提供能量的能力", "E": "INQ>1，表示该食物提供营养素的能力大于提供能量的能力，为“营养质量合格食物"}, "answer": ["B", "C", "D", "E"], "uncertain": false}, {"id": 268, "type": "multi", "content": "影响GI的因素有（　　）。", "options": {"A": "食物烹调方式", "B": "胃排空率", "C": "胰岛素反应强度", "D": "咀嚼程度", "E": "食物其他成分的含量"}, "answer": ["A", "B", "C", "D", "E"], "uncertain": false}, {"id": 269, "type": "multi", "content": "记账法适合于（ ）。", "options": {"A": "个人", "B": "家庭调查", "C": "幼儿园", "D": "中小学校", "E": "部队"}, "answer": ["B", "C", "D", "E"], "uncertain": false}, {"id": 270, "type": "multi", "content": "影响泌乳量的因素包括( )。", "options": {"A": "催乳素", "B": "环境因素", "C": "心理因素", "D": "乳母营养状况", "E": "乳房大小"}, "answer": ["A", "B", "C", "D"], "uncertain": false}, {"id": 271, "type": "multi", "content": "常见食物中，可作为膳食纤维的良好来源有（　　）。", "options": {"A": "精白面包", "B": "糙米", "C": "牛奶", "D": "西兰花", "E": "红薯"}, "answer": ["B", "D", "E"], "uncertain": false}, {"id": 272, "type": "multi", "content": "单端孢霉烯族类化合物毒性作用的共同特点是有较强的( )。", "options": {"A": "细胞毒性", "B": "免疫抑制作用", "C": "致畸作用", "D": "致癌作用", "E": "抑制胆碱醋酶活性"}, "answer": ["A", "B", "C", "D"], "uncertain": false}, {"id": 273, "type": "multi", "content": "脂肪摄入过多，有导致（ ）发病率升高的风险。", "options": {"A": "肥胖", "B": "心血管疾病", "C": "某些癌症", "D": "结石", "E": "癫痫"}, "answer": ["A", "B", "C"], "uncertain": false}, {"id": 274, "type": "multi", "content": "大肠中的细菌利用大肠的内容物合成人体的必需维生素有( )。", "options": {"A": "硫胺素", "B": "核黄素", "C": "叶酸", "D": "维生素K", "E": "维生素PP"}, "answer": ["A", "B", "C", "D"], "uncertain": false}, {"id": 275, "type": "multi", "content": "维生素A缺乏对人体健康的影响有（ ）。", "options": {"A": "缺乏维生素A可能会致盲", "B": "缺乏维生素A可能会患毛囊性丘疹", "C": "缺乏维生素A牙齿可能会出现裂纹和龋齿", "D": "缺乏维生素A可能会出现生殖功能障碍", "E": "缺乏维生素A可能会使机体免疫功能降低"}, "answer": ["A", "B", "C", "D", "E"], "uncertain": false}, {"id": 276, "type": "multi", "content": "煎、炸、炒的烹调方法对营养素的影响包括（　　）。", "options": {"A": "油脂热聚合物含量升高", "B": "对所有营养素都有不同程度的破坏", "C": "过氧化脂质含量升高", "D": "蛋白质因高温而严重变性", "E": "可能产生丙烯醛"}, "answer": ["A", "B", "C", "D", "E"], "uncertain": false}, {"id": 277, "type": "multi", "content": "锌缺乏的主要表现有（ ）。", "options": {"A": "生长缓慢", "B": "性成熟迟缓", "C": "食欲退减", "D": "伤口不易愈合", "E": "味觉异常"}, "answer": ["A", "B", "C", "D", "E"], "uncertain": false}, {"id": 278, "type": "multi", "content": "从业人员践行职业纪律的要求包括( )", "options": {"A": "学习岗位规则", "B": "执行操作规程", "C": "遵守行业规范", "D": "严守法律法规"}, "answer": ["A", "B", "C", "D"], "uncertain": false}, {"id": 279, "type": "multi", "content": "学龄前儿童生理特点包括( )。", "options": {"A": "生长发育仍保持稳步增长", "B": "消化能力依然有限", "C": "饮食行为上表现为自我做主", "D": "模仿能力极强", "E": "消化能力已基本接近成年人"}, "answer": ["A", "B", "C", "D"], "uncertain": false}, {"id": 281, "type": "multi", "content": "24小时回顾法和膳食史法都是开放式的调查，可以容纳调查对象所提到的任何一种食物或食物组合，并对有关食物的（ ）等反应食物特性的信息没有限定。", "options": {"A": "种类", "B": "来源", "C": "加工", "D": "处理方法", "E": "食物量"}, "answer": ["A", "B", "C", "D", "E"], "uncertain": false}, {"id": 282, "type": "multi", "content": "下列属于动物性食物提供的是（ ）。", "options": {"A": "优质蛋白质", "B": "脂肪", "C": "脂溶性维生素", "D": "矿物质", "E": "碳水化合物"}, "answer": ["A", "B", "C", "D"], "uncertain": false}, {"id": 283, "type": "multi", "content": "蛋白质的消耗分解说法正确的是（ ）。", "options": {"A": "蛋白质可以直接被分解释放出能量。", "B": "蛋白质经三羧酸循环氧化分解，释放能量。", "C": "蛋白质只有被分解成游离氨基酸才能被吸收。", "D": "蛋白质主要在胃里面被消化。", "E": "蛋白质是主要供能物质。"}, "answer": ["A", "B"], "uncertain": false}, {"id": 284, "type": "multi", "content": "在制作食品标签时，除了强制要求标示的内容外，推荐标示的内容有（ ）。", "options": {"A": "批号", "B": "食用方法", "C": "致敏物质", "D": "贮存条件", "E": "规格"}, "answer": ["A", "B", "C"], "uncertain": false}, {"id": 285, "type": "multi", "content": "儿童佝偻病的临床表现为（ ）。", "options": {"A": "出现多汗、夜惊、易激怒等神经精神症状。", "B": "出现发育不良、神情呆滞。", "C": "一岁以下患儿出现赫氏沟。", "D": "腕部形似“手足镯”。", "E": "两岁以上患儿可见有鸡胸等胸部畸形。"}, "answer": ["A", "B", "C", "D", "E"], "uncertain": false}, {"id": 286, "type": "multi", "content": "社会主义职业道德之所以要以集体主义为原则，是因为( )。", "options": {"A": "集体主义集中反映了广大劳动者的根本利益", "B": "集体主义是正确处理个人、集体、国家利益之间关系的原则", "C": "集体主义职业道德原则是社会主义职业道德区别于其他社会形态职业道德特征之一", "D": "集体主义能够化解个人之间的矛盾", "E": "集体主义能够保护每个人的利益"}, "answer": ["A", "B", "C"], "uncertain": false}, {"id": 287, "type": "multi", "content": "营养改善项目评价主要围绕哪几个方面进行（ ）。", "options": {"A": "投入", "B": "产出", "C": "效益", "D": "效果", "E": "居民接受度"}, "answer": ["A", "B", "C", "D"], "uncertain": false}, {"id": 288, "type": "multi", "content": "健康信息表格的设计原则有（ ）。", "options": {"A": "真实可靠原则", "B": "不断更新原则", "C": "发现问题及时处理原则", "D": "保密原则", "E": "模糊原则"}, "answer": ["A", "B", "C"], "uncertain": false}, {"id": 289, "type": "multi", "content": "职业道德的特征包括（ ）。", "options": {"A": "约束性", "B": "继承性", "C": "多样性", "D": "普遍性", "E": "实践性"}, "answer": ["A", "B", "C", "D", "E"], "uncertain": false}, {"id": 290, "type": "multi", "content": "7~24月龄幼儿喂养应遵循( )。", "options": {"A": "不再需要母乳喂养，配方奶也不需要", "B": "最先添加富钙的高能量食物", "C": "辅食应保持原味", "D": "不食用整粒花生、坚果、果冻等", "E": "控制每餐时间不超过20min"}, "answer": ["C", "D", "E"], "uncertain": false}, {"id": 291, "type": "multi", "content": "我国偏远山区的居民的膳食结构主要为以植物性食物为主，动物性食物摄入较少，高碳水、高膳食纤维、低动物脂肪，长期以往，可能会出现（ ）。", "options": {"A": "维生素C缺乏", "B": "维生素B2缺乏", "C": "损伤后细胞再生缓慢", "D": "碳水化合物、脂肪酸等物质代谢变慢", "E": "色氨酸形成烟酸的过程变慢"}, "answer": ["B", "C", "D", "E"], "uncertain": false}, {"id": 293, "type": "multi", "content": "职业道德是在人们从事职业活动过程时形成的是一种 ( )的约束机制", "options": {"A": "内在的", "B": "强制执行", "C": "非强制执行的", "D": "法律要求的", "E": "外在的"}, "answer": ["A", "C"], "uncertain": false}, {"id": 294, "type": "multi", "content": "鱼类引起的组胺中毒特点是（ ）。", "options": {"A": "发病快", "B": "症状轻", "C": "恢复迅速", "D": "发病率可达50%左右", "E": "不致死亡"}, "answer": ["A", "B", "C", "D"], "uncertain": false}, {"id": 295, "type": "multi", "content": "人体内的铁可分为 ( )。", "options": {"A": "储存铁", "B": "功能性铁", "C": "纳米铁", "D": "小分子贴铁", "E": "大分子铁"}, "answer": ["A", "B"], "uncertain": false}, {"id": 296, "type": "multi", "content": "科普文章的主题提炼应注意的几个方面是（ ）", "options": {"A": "小", "B": "大", "C": "尖", "D": "新", "E": "宽"}, "answer": ["A", "C", "D"], "uncertain": false}, {"id": 297, "type": "multi", "content": "幼儿期生理特点包括( )。", "options": {"A": "体重增长速度减慢", "B": "身长增长的速度减慢", "C": "神经细胞间的联系逐渐复杂起来", "D": "容易发生消化不良", "E": "容易发生某些营养缺乏病"}, "answer": ["A", "B", "C", "D", "E"], "uncertain": false}, {"id": 299, "type": "multi", "content": "下列属于儿童需要培养的良好饮食习惯的是（ ）。", "options": {"A": "不挑食", "B": "不偏食", "C": "不暴饮暴食", "D": "细嚼慢咽", "E": "不乱吃零食"}, "answer": ["A", "B", "C", "D", "E"], "uncertain": false}, {"id": 300, "type": "multi", "content": "食品中需要重点关注的重金属类别有（　　）。", "options": {"A": "铅", "B": "铜", "C": "镉", "D": "砷", "E": "汞"}, "answer": ["A", "C", "D", "E"], "uncertain": false}]</script>
+<script>
+(function(){
+  "use strict";
+
+  /* ================== SAFE STORAGE WRAPPER ==================
+     Wrap localStorage so a sandboxed / restricted environment
+     (or a browser with storage disabled) never throws and breaks
+     the app. Falls back to an in-memory object silently.
+  ============================================================ */
+  var memoryFallback = {};
+  var storageWorks = true;
+  try {
+    var testKey = "__nutri_quiz_test__";
+    window.localStorage.setItem(testKey, "1");
+    window.localStorage.removeItem(testKey);
+  } catch (e) {
+    storageWorks = false;
+  }
+  var Store = {
+    get: function(key, fallback){
+      try{
+        if(storageWorks){
+          var v = window.localStorage.getItem(key);
+          return v === null ? fallback : JSON.parse(v);
+        }
+        return (key in memoryFallback) ? memoryFallback[key] : fallback;
+      }catch(e){
+        return (key in memoryFallback) ? memoryFallback[key] : fallback;
+      }
+    },
+    set: function(key, value){
+      try{
+        if(storageWorks){
+          window.localStorage.setItem(key, JSON.stringify(value));
+          return;
+        }
+        memoryFallback[key] = value;
+      }catch(e){
+        memoryFallback[key] = value;
+      }
+    },
+    remove: function(key){
+      try{
+        if(storageWorks){ window.localStorage.removeItem(key); }
+        delete memoryFallback[key];
+      }catch(e){
+        delete memoryFallback[key];
+      }
+    }
+  };
+
+  if(!storageWorks){
+    // Inform the user once that progress will not persist between visits.
+    setTimeout(function(){
+      showToast("当前环境无法保存进度（本次练习记录仅在本页内有效）");
+    }, 600);
+  }
+
+  var STORAGE_KEYS = {
+    PROGRESS: "nutriQuiz_progress_v1",   // { type: 'all', mode:'sequential', order:[ids], cursor:N }
+    STATS: "nutriQuiz_stats_v1",         // { attempted, correct }
+    WRONG: "nutriQuiz_wrong_v1",         // { [questionId]: true }
+    PER_Q: "nutriQuiz_perq_v1"           // { [questionId]: {attempted, correct} } - kept for future, not strictly required
+  };
+
+  /* ================== LOAD QUESTION BANK ================== */
+  var ALL_QUESTIONS = [];
+  try {
+    var raw = document.getElementById("question-data").textContent;
+    ALL_QUESTIONS = JSON.parse(raw);
+  } catch(e){
+    ALL_QUESTIONS = [];
+  }
+  var QUESTION_MAP = {};
+  ALL_QUESTIONS.forEach(function(q){ QUESTION_MAP[q.id] = q; });
+
+  /* ================== DOM SHORTCUTS ================== */
+  function $(id){ return document.getElementById(id); }
+  function qs(sel, root){ return (root||document).querySelector(sel); }
+  function qsa(sel, root){ return Array.prototype.slice.call((root||document).querySelectorAll(sel)); }
+
+  var screens = {
+    home: $("screen-home"),
+    quiz: $("screen-quiz"),
+    result: $("screen-result")
+  };
+  function showScreen(name){
+    Object.keys(screens).forEach(function(k){
+      screens[k].classList.toggle("hidden", k !== name);
+    });
+    window.scrollTo(0,0);
+  }
+
+  /* ================== TOAST ================== */
+  var toastTimer = null;
+  function showToast(msg){
+    var t = $("toast");
+    t.textContent = msg;
+    t.classList.add("show");
+    if(toastTimer) clearTimeout(toastTimer);
+    toastTimer = setTimeout(function(){ t.classList.remove("show"); }, 2200);
+  }
+
+  /* ================== MODAL (replaces confirm/alert) ================== */
+  var modalMask = $("modal-mask");
+  var modalConfirmHandler = null;
+  function openModal(title, body, onConfirm, confirmLabel){
+    $("modal-title").textContent = title;
+    $("modal-body").textContent = body;
+    $("modal-confirm").textContent = confirmLabel || "确定";
+    modalConfirmHandler = onConfirm;
+    modalMask.classList.remove("hidden");
+  }
+  function closeModal(){
+    modalMask.classList.add("hidden");
+    modalConfirmHandler = null;
+  }
+  $("modal-cancel").addEventListener("click", closeModal);
+  $("modal-confirm").addEventListener("click", function(){
+    var fn = modalConfirmHandler;
+    closeModal();
+    if(typeof fn === "function") fn();
+  });
+  modalMask.addEventListener("click", function(e){
+    if(e.target === modalMask) closeModal();
+  });
+
+  /* ================== HELPERS ================== */
+  function shuffle(arr){
+    var a = arr.slice();
+    for(var i = a.length - 1; i > 0; i--){
+      var j = Math.floor(Math.random() * (i + 1));
+      var tmp = a[i]; a[i] = a[j]; a[j] = tmp;
+    }
+    return a;
+  }
+  function filterByType(type){
+    if(type === "all") return ALL_QUESTIONS.map(function(q){return q.id;});
+    return ALL_QUESTIONS.filter(function(q){ return q.type === type; }).map(function(q){return q.id;});
+  }
+  function arraysEqualAsSets(a, b){
+    if(a.length !== b.length) return false;
+    var as = a.slice().sort();
+    var bs = b.slice().sort();
+    for(var i=0;i<as.length;i++){ if(as[i] !== bs[i]) return false; }
+    return true;
+  }
+  function letters(){ return ["A","B","C","D","E"]; }
+
+  /* ================== STATS ================== */
+  function getStats(){
+    return Store.get(STORAGE_KEYS.STATS, {attempted:0, correct:0});
+  }
+  function bumpStats(isCorrect){
+    var s = getStats();
+    s.attempted += 1;
+    if(isCorrect) s.correct += 1;
+    Store.set(STORAGE_KEYS.STATS, s);
+  }
+  function getWrongSet(){
+    return Store.get(STORAGE_KEYS.WRONG, {});
+  }
+  function setWrong(id, isWrong){
+    var w = getWrongSet();
+    if(isWrong){ w[id] = true; }
+    else { delete w[id]; }
+    Store.set(STORAGE_KEYS.WRONG, w);
+  }
+
+  function refreshHomeStats(){
+    var s = getStats();
+    var acc = s.attempted > 0 ? Math.round((s.correct / s.attempted) * 100) : 0;
+    $("stat-attempted").textContent = s.attempted;
+    $("stat-accuracy").textContent = acc + "%";
+    var wrongCount = Object.keys(getWrongSet()).length;
+    $("stat-wrong").textContent = wrongCount;
+    $("home-total-count").textContent = ALL_QUESTIONS.length;
+
+    var wrongDesc = $("wrong-desc");
+    var wrongBtn = $("mode-wrong");
+    if(wrongCount === 0){
+      wrongDesc.textContent = "暂无错题，继续加油～";
+      wrongBtn.querySelector(".mc-title").textContent = "错题练习（0）";
+    } else {
+      wrongDesc.textContent = "共 " + wrongCount + " 道错题待巩固";
+      wrongBtn.querySelector(".mc-title").textContent = "错题练习（" + wrongCount + "）";
+    }
+
+    var progress = Store.get(STORAGE_KEYS.PROGRESS, null);
+    var resumeEl = $("stat-resume");
+    var resumeBtn = $("mode-resume");
+    if(progress && progress.order && progress.cursor < progress.order.length){
+      resumeEl.textContent = (progress.cursor + 1) + " / " + progress.order.length;
+      $("resume-desc").textContent = "从第 " + (progress.cursor + 1) + " 题继续";
+      resumeBtn.style.opacity = "1";
+      resumeBtn.disabled = false;
+    } else {
+      resumeEl.textContent = "—";
+      $("resume-desc").textContent = "暂无未完成的练习";
+      resumeBtn.style.opacity = ".45";
+      resumeBtn.disabled = true;
+    }
+  }
+
+  /* ================== QUIZ SESSION STATE ================== */
+  var session = {
+    order: [],        // array of question ids in play order
+    cursor: 0,
+    mode: "sequential", // sequential | random | resume | wrong
+    answered: {},      // id -> {selected:[...], correct:bool}
+    sessionCorrect: 0,
+    sessionTotal: 0,
+    persist: true       // whether to write resume progress (false for wrong-only quick drills, still fine to persist though)
+  };
+
+  var currentType = "all";
+  qsa("#type-toggle button").forEach(function(btn){
+    btn.addEventListener("click", function(){
+      qsa("#type-toggle button").forEach(function(b){ b.classList.remove("active"); });
+      btn.classList.add("active");
+      currentType = btn.getAttribute("data-type");
+    });
+  });
+
+  function startSession(ids, mode){
+    if(ids.length === 0){
+      showToast("没有可练习的题目");
+      return;
+    }
+    session.order = ids;
+    session.cursor = 0;
+    session.mode = mode;
+    session.answered = {};
+    session.sessionCorrect = 0;
+    session.sessionTotal = 0;
+    saveProgress();
+    showScreen("quiz");
+    renderQuestion();
+  }
+
+  function saveProgress(){
+    Store.set(STORAGE_KEYS.PROGRESS, {
+      order: session.order,
+      cursor: session.cursor,
+      mode: session.mode,
+      type: currentType
+    });
+  }
+
+  $("mode-sequential").addEventListener("click", function(){
+    var ids = filterByType(currentType);
+    startSession(ids, "sequential");
+  });
+  $("mode-random").addEventListener("click", function(){
+    var ids = shuffle(filterByType(currentType));
+    startSession(ids, "random");
+  });
+  $("mode-resume").addEventListener("click", function(){
+    var progress = Store.get(STORAGE_KEYS.PROGRESS, null);
+    if(!progress || !progress.order || progress.cursor >= progress.order.length){
+      showToast("暂无可继续的练习");
+      return;
+    }
+    session.order = progress.order;
+    session.cursor = progress.cursor;
+    session.mode = progress.mode || "sequential";
+    session.answered = {};
+    session.sessionCorrect = 0;
+    session.sessionTotal = 0;
+    showScreen("quiz");
+    renderQuestion();
+  });
+  $("mode-wrong").addEventListener("click", function(){
+    var wrongIds = Object.keys(getWrongSet()).map(Number);
+    if(currentType !== "all"){
+      wrongIds = wrongIds.filter(function(id){
+        var q = QUESTION_MAP[id];
+        return q && q.type === currentType;
+      });
+    }
+    if(wrongIds.length === 0){
+      showToast("当前没有符合筛选条件的错题");
+      return;
+    }
+    startSession(shuffle(wrongIds), "wrong");
+  });
+
+  $("btn-reset").addEventListener("click", function(){
+    openModal(
+      "清空全部学习记录？",
+      "这将删除累计正确率、错题本和练习进度，且无法恢复。确定要继续吗？",
+      function(){
+        Store.remove(STORAGE_KEYS.PROGRESS);
+        Store.remove(STORAGE_KEYS.STATS);
+        Store.remove(STORAGE_KEYS.WRONG);
+        Store.remove(STORAGE_KEYS.PER_Q);
+        refreshHomeStats();
+        showToast("学习记录已清空");
+      },
+      "清空"
+    );
+  });
+
+  /* ================== EXPORT / IMPORT ==================
+     Lets the user carry their progress across devices/browsers,
+     or survive an environment where localStorage doesn't persist
+     (e.g. a sandboxed preview). The "code" is just a versioned,
+     base64-encoded JSON blob — no server round trip needed.
+  ======================================================== */
+  var CODE_PREFIX = "NQ1:"; // "Nutri Quiz, format v1"
+
+  function buildExportCode(){
+    var payload = {
+      v: 1,
+      exportedAt: new Date().toISOString(),
+      stats: getStats(),
+      wrong: getWrongSet(),
+      progress: Store.get(STORAGE_KEYS.PROGRESS, null)
+    };
+    var json = JSON.stringify(payload);
+    var b64;
+    try{
+      // encodeURIComponent/unescape pair keeps multi-byte (Chinese) text
+      // safe to pass into btoa, which only accepts Latin1.
+      b64 = btoa(unescape(encodeURIComponent(json)));
+    }catch(e){
+      return null;
+    }
+    return CODE_PREFIX + b64;
+  }
+
+  function parseImportCode(code){
+    code = (code || "").trim();
+    if(code.indexOf(CODE_PREFIX) !== 0){
+      throw new Error("代码格式不正确，请确认完整复制了导出的内容。");
+    }
+    var b64 = code.slice(CODE_PREFIX.length).trim();
+    var json;
+    try{
+      json = decodeURIComponent(escape(atob(b64)));
+    }catch(e){
+      throw new Error("代码无法解析，可能在复制时被截断或修改。");
+    }
+    var data;
+    try{
+      data = JSON.parse(json);
+    }catch(e){
+      throw new Error("代码内容已损坏，无法读取。");
+    }
+    if(!data || typeof data !== "object" || !data.stats || typeof data.wrong !== "object"){
+      throw new Error("代码内容不完整，缺少必要的学习记录字段。");
+    }
+    return data;
+  }
+
+  function copyText(text){
+    // execCommand works reliably on file:// pages (insecure context),
+    // where the modern Clipboard API is often unavailable. Try it first,
+    // then fall back to the Clipboard API if present.
+    var ta = document.createElement("textarea");
+    ta.value = text;
+    ta.style.position = "fixed";
+    ta.style.left = "-9999px";
+    ta.style.top = "0";
+    document.body.appendChild(ta);
+    ta.focus();
+    ta.select();
+    var ok = false;
+    try{ ok = document.execCommand("copy"); }catch(e){ ok = false; }
+    document.body.removeChild(ta);
+    if(ok) return true;
+    if(navigator.clipboard && window.isSecureContext){
+      try{
+        navigator.clipboard.writeText(text);
+        return true;
+      }catch(e){ /* fall through */ }
+    }
+    return false;
+  }
+
+  var dataModalMask = $("data-modal-mask");
+  var dataModalMode = "export"; // "export" | "import"
+
+  function openExportModal(){
+    var code = buildExportCode();
+    dataModalMode = "export";
+    $("data-modal-title").textContent = "导出学习记录";
+    $("data-modal-desc").textContent =
+      "复制下面这段代码并保存好（例如发到「文件传输助手」或备忘录里）。下次打开题库时，点击「导入学习记录」并粘贴这段代码，即可恢复进度、正确率和错题本。";
+    var ta = $("data-modal-textarea");
+    ta.value = code || "生成失败，请重试";
+    ta.readOnly = true;
+    $("data-modal-error").classList.add("hidden");
+    $("data-modal-action").textContent = "复制代码";
+    dataModalMask.classList.remove("hidden");
+    ta.focus();
+    ta.select();
+  }
+
+  function openImportModal(){
+    dataModalMode = "import";
+    $("data-modal-title").textContent = "导入学习记录";
+    $("data-modal-desc").textContent =
+      "粘贴之前导出的代码（以 " + CODE_PREFIX + " 开头）。导入会覆盖当前设备上已有的学习记录，请确认无误后再继续。";
+    var ta = $("data-modal-textarea");
+    ta.value = "";
+    ta.readOnly = false;
+    $("data-modal-error").classList.add("hidden");
+    $("data-modal-action").textContent = "导入这段记录";
+    dataModalMask.classList.remove("hidden");
+    ta.focus();
+  }
+
+  $("btn-export").addEventListener("click", openExportModal);
+  $("btn-import").addEventListener("click", openImportModal);
+
+  $("data-modal-cancel").addEventListener("click", function(){
+    dataModalMask.classList.add("hidden");
+  });
+  dataModalMask.addEventListener("click", function(e){
+    if(e.target === dataModalMask) dataModalMask.classList.add("hidden");
+  });
+
+  $("data-modal-action").addEventListener("click", function(){
+    var ta = $("data-modal-textarea");
+    var errEl = $("data-modal-error");
+    errEl.classList.add("hidden");
+
+    if(dataModalMode === "export"){
+      var success = copyText(ta.value);
+      if(success){
+        showToast("已复制到剪贴板，请妥善保存");
+      } else {
+        errEl.textContent = "自动复制失败，请长按文本框手动选择并复制。";
+        errEl.classList.remove("hidden");
+        ta.focus();
+        ta.select();
+      }
+      return;
+    }
+
+    // import mode
+    var parsed;
+    try{
+      parsed = parseImportCode(ta.value);
+    }catch(e){
+      errEl.textContent = e.message || "导入失败，请检查代码是否完整。";
+      errEl.classList.remove("hidden");
+      return;
+    }
+
+    dataModalMask.classList.add("hidden");
+    openModal(
+      "确认导入？",
+      "这会覆盖当前设备上的正确率、错题本和练习进度。确定要用导入的数据替换吗？",
+      function(){
+        Store.set(STORAGE_KEYS.STATS, parsed.stats || {attempted:0, correct:0});
+        Store.set(STORAGE_KEYS.WRONG, parsed.wrong || {});
+        if(parsed.progress){
+          Store.set(STORAGE_KEYS.PROGRESS, parsed.progress);
+        } else {
+          Store.remove(STORAGE_KEYS.PROGRESS);
+        }
+        refreshHomeStats();
+        showToast("学习记录已导入");
+      },
+      "覆盖导入"
+    );
+  });
+
+  /* ================== RENDER QUESTION ================== */
+  var pendingSelection = []; // letters selected by the user, before submit
+  var currentSubmitted = false;
+
+  function renderQuestion(){
+    var id = session.order[session.cursor];
+    var q = QUESTION_MAP[id];
+    if(!q){
+      // Defensive: skip a missing id rather than crash the app.
+      advanceCursorSkippingMissing();
+      return;
+    }
+
+    pendingSelection = [];
+    currentSubmitted = false;
+
+    $("quiz-pos").textContent = session.cursor + 1;
+    $("quiz-total").textContent = session.order.length;
+    var pct = Math.round(((session.cursor) / session.order.length) * 100);
+    $("progress-bar").style.width = pct + "%";
+
+    $("q-type-label").textContent = q.type === "single" ? "单选题" : "多选题";
+    $("q-id-label").textContent = "#" + String(q.id).padStart(4, "0");
+    $("q-body").textContent = q.content;
+
+    var uncertainEl = $("q-uncertain");
+    uncertainEl.classList.toggle("hidden", !q.uncertain);
+
+    var optsEl = $("q-options");
+    optsEl.innerHTML = "";
+    Object.keys(q.options).forEach(function(letter){
+      var li = document.createElement("li");
+      var btn = document.createElement("button");
+      btn.className = "opt-btn" + (q.type === "multi" ? " multi" : "");
+      btn.setAttribute("data-letter", letter);
+      btn.innerHTML =
+        '<span class="opt-letter">' + letter + '</span>' +
+        '<span class="opt-text"></span>';
+      btn.querySelector(".opt-text").textContent = q.options[letter];
+      btn.addEventListener("click", function(){ onOptionClick(q, letter, btn); });
+      li.appendChild(btn);
+      optsEl.appendChild(li);
+    });
+
+    var fb = $("feedback-bar");
+    fb.className = "feedback-bar";
+    fb.textContent = "";
+
+    $("btn-submit").classList.remove("hidden");
+    $("btn-submit").disabled = true;
+    $("btn-next").classList.add("hidden");
+    $("btn-prev").disabled = session.cursor === 0;
+
+    // If this question was already answered in this session (e.g. user went back), restore state.
+    if(session.answered[id]){
+      restoreAnsweredState(q, session.answered[id]);
+    }
+
+    saveProgress();
+  }
+
+  function advanceCursorSkippingMissing(){
+    session.cursor += 1;
+    if(session.cursor >= session.order.length){
+      finishSession();
+    } else {
+      renderQuestion();
+    }
+  }
+
+  function onOptionClick(q, letter, btn){
+    if(currentSubmitted) return; // locked after submit
+    if(q.type === "single"){
+      pendingSelection = [letter];
+      qsa(".opt-btn", $("q-options")).forEach(function(b){ b.classList.remove("selected"); });
+      btn.classList.add("selected");
+    } else {
+      var idx = pendingSelection.indexOf(letter);
+      if(idx === -1){
+        pendingSelection.push(letter);
+        btn.classList.add("selected");
+      } else {
+        pendingSelection.splice(idx, 1);
+        btn.classList.remove("selected");
+      }
+    }
+    $("btn-submit").disabled = pendingSelection.length === 0;
+  }
+
+  $("btn-submit").addEventListener("click", function(){
+    if(currentSubmitted || pendingSelection.length === 0) return;
+    submitAnswer();
+  });
+
+  function submitAnswer(){
+    var id = session.order[session.cursor];
+    var q = QUESTION_MAP[id];
+    currentSubmitted = true;
+
+    var correctLetters = (q.type === "single") ? [q.answer] : q.answer;
+    var isCorrect = arraysEqualAsSets(pendingSelection, correctLetters);
+
+    // Lock options & paint correctness
+    qsa(".opt-btn", $("q-options")).forEach(function(b){
+      var letter = b.getAttribute("data-letter");
+      b.classList.add("disabled");
+      var wasSelected = pendingSelection.indexOf(letter) !== -1;
+      var isCorrectLetter = correctLetters.indexOf(letter) !== -1;
+      if(isCorrectLetter){ b.classList.add("correct"); }
+      if(wasSelected && !isCorrectLetter){ b.classList.add("wrong"); }
+      if(!wasSelected) b.classList.remove("selected");
+    });
+
+    var fb = $("feedback-bar");
+    fb.classList.add("show");
+    if(isCorrect){
+      fb.classList.remove("wrong");
+      fb.textContent = "✓ 回答正确";
+    } else {
+      fb.classList.add("wrong");
+      fb.textContent = "✗ 回答错误 · 正确答案：" + correctLetters.join("、");
+    }
+
+    bumpStats(isCorrect);
+    setWrong(id, !isCorrect);
+
+    session.answered[id] = { selected: pendingSelection.slice(), correct: isCorrect };
+    session.sessionTotal += 1;
+    if(isCorrect) session.sessionCorrect += 1;
+
+    $("btn-submit").classList.add("hidden");
+    $("btn-next").classList.remove("hidden");
+    $("btn-next").textContent = (session.cursor === session.order.length - 1) ? "完成练习" : "下一题";
+  }
+
+  function restoreAnsweredState(q, record){
+    currentSubmitted = true;
+    pendingSelection = record.selected.slice();
+    var correctLetters = (q.type === "single") ? [q.answer] : q.answer;
+
+    qsa(".opt-btn", $("q-options")).forEach(function(b){
+      var letter = b.getAttribute("data-letter");
+      b.classList.add("disabled");
+      var wasSelected = record.selected.indexOf(letter) !== -1;
+      var isCorrectLetter = correctLetters.indexOf(letter) !== -1;
+      if(isCorrectLetter){ b.classList.add("correct"); }
+      if(wasSelected && !isCorrectLetter){ b.classList.add("wrong"); }
+    });
+
+    var fb = $("feedback-bar");
+    fb.classList.add("show");
+    if(record.correct){
+      fb.classList.remove("wrong");
+      fb.textContent = "✓ 回答正确";
+    } else {
+      fb.classList.add("wrong");
+      fb.textContent = "✗ 回答错误 · 正确答案：" + correctLetters.join("、");
+    }
+    $("btn-submit").classList.add("hidden");
+    $("btn-next").classList.remove("hidden");
+    $("btn-next").textContent = (session.cursor === session.order.length - 1) ? "完成练习" : "下一题";
+  }
+
+  $("btn-prev").addEventListener("click", function(){
+    if(session.cursor === 0) return;
+    session.cursor -= 1;
+    renderQuestion();
+  });
+
+  $("btn-next").addEventListener("click", function(){
+    if(session.cursor >= session.order.length - 1){
+      finishSession();
+    } else {
+      session.cursor += 1;
+      renderQuestion();
+    }
+  });
+
+  $("quiz-back").addEventListener("click", function(){
+    openModal(
+      "退出本次练习？",
+      "已作答的题目会保留学习记录，未作答的部分可稍后通过“继续上次”恢复。",
+      function(){
+        saveProgress();
+        showScreen("home");
+        refreshHomeStats();
+      },
+      "退出"
+    );
+  });
+
+  /* ================== FINISH / RESULT ================== */
+  function finishSession(){
+    $("progress-bar").style.width = "100%";
+    var total = session.order.length;
+    var correctCount = 0;
+    session.order.forEach(function(id){
+      var rec = session.answered[id];
+      if(rec && rec.correct) correctCount++;
+    });
+    var answeredCount = Object.keys(session.answered).length;
+    var wrongCount = answeredCount - correctCount;
+    var acc = answeredCount > 0 ? Math.round((correctCount / answeredCount) * 100) : 0;
+
+    $("result-title").textContent =
+      session.mode === "wrong" ? "错题巩固完成" :
+      session.mode === "random" ? "随机练习完成" : "练习完成";
+    $("result-score").textContent = acc + "%";
+    $("result-correct").textContent = correctCount;
+    $("result-wrong").textContent = wrongCount;
+    $("result-total").textContent = answeredCount;
+
+    // Clear resume progress since this session is complete.
+    Store.remove(STORAGE_KEYS.PROGRESS);
+
+    showScreen("result");
+  }
+
+  $("result-home").addEventListener("click", function(){
+    showScreen("home");
+    refreshHomeStats();
+  });
+
+  $("result-review-wrong").addEventListener("click", function(){
+    var wrongIdsThisRound = session.order.filter(function(id){
+      var rec = session.answered[id];
+      return rec && !rec.correct;
+    });
+    if(wrongIdsThisRound.length === 0){
+      showToast("本轮全部答对，没有错题～");
+      return;
+    }
+    startSession(wrongIdsThisRound, "wrong");
+  });
+
+  /* ================== INIT ================== */
+  function init(){
+    if(ALL_QUESTIONS.length === 0){
+      $("screen-home").innerHTML = '<div class="empty-state">题库加载失败，请确认本文件完整下载后再打开。</div>';
+      return;
+    }
+    refreshHomeStats();
+    showScreen("home");
+  }
+  init();
+
+})();
+
+</script>
+</body>
+</html>
