@@ -1,0 +1,18 @@
+#swarm-rebuild-layer{position:fixed;inset:0;overflow:hidden;pointer-events:none;user-select:none;z-index:2147483640;contain:layout style;isolation:isolate}
+.swarm-cooperator{position:absolute;left:0;top:0;width:22px;height:28px;opacity:0;transition:opacity 160ms ease;will-change:transform,opacity;filter:drop-shadow(0 1px 1px rgba(15,28,45,.20))}
+.swarm-cooperator svg{display:block;width:15px;height:18px;overflow:visible}.swarm-cooperator path{fill:var(--worker);stroke:#fff;stroke-width:1.2;stroke-linejoin:round}
+.swarm-worker-id{position:absolute;left:8px;top:15px;background:var(--worker);color:#fff;padding:1px 3px;border-radius:2px;font:700 7px/1.2 ui-monospace,SFMono-Regular,monospace}
+.swarm-local-mark{position:absolute;width:0;height:0;pointer-events:none;animation:swarm-fade 180ms ease 1370ms forwards;color:var(--ink)}
+.swarm-local-geometry{position:absolute;left:-92px;top:-58px;width:184px;height:116px;overflow:visible}
+.swarm-guide{fill:none;stroke:var(--ink);stroke-width:.75;stroke-dasharray:2 4;opacity:.25;vector-effect:non-scaling-stroke}.swarm-tick{stroke:var(--ink);stroke-width:.75;opacity:.3;vector-effect:non-scaling-stroke}
+.swarm-cross{stroke:var(--second);stroke-width:1;opacity:.7;vector-effect:non-scaling-stroke}
+.swarm-frame{fill:rgba(255,255,255,.025);stroke:var(--ink);stroke-width:1;stroke-dasharray:100;stroke-dashoffset:100;opacity:.8;vector-effect:non-scaling-stroke;animation:swarm-draw 560ms cubic-bezier(.18,.72,.26,1) 260ms forwards}
+.swarm-frame-two{stroke:var(--second);stroke-width:.85;opacity:.6;animation-delay:400ms;animation-duration:430ms}
+.swarm-pen{fill:none;stroke:var(--second);stroke-width:1.2;stroke-linecap:round;stroke-dasharray:100;stroke-dashoffset:100;opacity:.85;vector-effect:non-scaling-stroke;animation:swarm-draw 470ms ease 620ms forwards}
+.swarm-typed{position:absolute;left:12px;top:27px;display:inline-block;max-width:62vw;overflow:hidden;white-space:nowrap;padding:3px 6px;border-left:2px solid var(--ink);border-radius:0 3px 3px 0;background:rgba(255,255,255,.92);box-shadow:0 1px 4px rgba(20,35,50,.12);color:#26364a;font:650 9px/1.2 ui-monospace,SFMono-Regular,monospace;letter-spacing:.02em;clip-path:inset(0 100% 0 0);animation:swarm-type 540ms steps(var(--steps),end) 570ms forwards}
+.swarm-type-left{left:-12px;transform:translateX(-100%)}.swarm-type-above{top:-31px}
+@keyframes swarm-draw{to{stroke-dashoffset:0}}@keyframes swarm-type{to{clip-path:inset(0 0 0 0)}}@keyframes swarm-fade{to{opacity:0}}
+@media(max-width:600px){.swarm-local-geometry{transform:scale(.88);transform-origin:center}.swarm-typed{font-size:8px}}
+@media(prefers-reduced-motion:reduce){.swarm-local-mark{animation:none}.swarm-frame,.swarm-frame-two,.swarm-pen{animation:none;stroke-dashoffset:0}.swarm-typed{animation:none;clip-path:inset(0 0 0 0)}}
+
+@media(prefers-reduced-motion:reduce){.swarm-cooperator{transition:none}}
