@@ -1,0 +1,10 @@
+/* Keep the intentionally tilted ticker from widening the page scroll area. */
+html, body { overflow-x: clip; }
+
+/* Preview-only progressive enhancement: real content must never depend on
+   ScrollReveal's cached geometry after optional drawing sheets change layout. */
+html.pbd-preview .load-hidden {
+  visibility: visible !important;
+  opacity: 1 !important;
+  transform: none !important;
+}
