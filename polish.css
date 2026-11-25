@@ -121,9 +121,15 @@ section[id] {
   animation: none !important;
 }
 
-/* Slow the remaining orbital accent so it reads as ambience, not a spinner. */
+/* The stat tile's conic wedge gets clipped by the rounded frame and reads as a
+   rendering artifact; the concentric rings behind it carry the idea. */
 #projects .thumbnail--stat::after {
-  animation-duration: 34s;
+  display: none;
+}
+
+/* A 3px chromatic offset on a 59% figure reads as blur at small sizes. */
+#projects .thumbnail--stat .stat-num {
+  text-shadow: 0 0 32px rgba(0, 229, 255, 0.45);
 }
 
 /* A blink cursor on the eyebrow, if present, should not blink twice a second. */
@@ -302,6 +308,32 @@ section[id] {
   background: #f4f4f4;
 }
 
+/* Hero copy sits on top of moving coloured light; a soft scrim keeps the
+   contrast in the corners where the aurora peaks. */
+#hero .container {
+  isolation: isolate;
+}
+#hero .container::before {
+  content: "";
+  position: absolute;
+  inset: -14% -8%;
+  z-index: -1;
+  pointer-events: none;
+  background: radial-gradient(
+    60% 60% at 50% 50%,
+    rgba(5, 5, 13, 0.78) 0%,
+    rgba(5, 5, 13, 0.45) 55%,
+    rgba(5, 5, 13, 0) 100%
+  );
+}
+
+/* Narrow phones: the headline needs the extra room to avoid a one-word line. */
+@media (max-width: 375px) {
+  #hero .hero-title {
+    font-size: 3.2rem;
+  }
+}
+
 /* ---------- Reduced motion ---------------------------------------------- */
 
 @media (prefers-reduced-motion: reduce) {
@@ -345,6 +377,17 @@ section[id] {
   .aurora,
   .mist {
     animation: none;
+  }
+
+  /* The aurora is physically huge on a phone and washes over the hero copy. */
+  #hero .aurora {
+    opacity: 0.55;
+  }
+  #hero .mist {
+    opacity: 0.4;
+  }
+  #hero .hero-sub {
+    color: #d8d8e6;
   }
 
   #hero {
