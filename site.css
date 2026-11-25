@@ -958,9 +958,12 @@ body.is-locked {
     grid-template-columns: 1fr;
     gap: 28px;
   }
-  .stat-grid--rev .stat-block,
   .stat-grid--rev .stat-block {
+    order: initial;
     text-align: left;
+  }
+  .chapter__detail {
+    padding-top: 0;
   }
 
   .cards {
