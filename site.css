@@ -278,7 +278,7 @@ section {
 }
 .nav__menu span {
   display: block;
-  width: 18px;
+  width: 20px;
   height: 1.5px;
   background: var(--ink);
   border-radius: 2px;
@@ -422,9 +422,22 @@ body.is-locked {
 /* ---------- Hero ---------- */
 
 .hero {
+  position: relative;
   padding: calc(132px + env(safe-area-inset-top, 0px)) 0 clamp(56px, 8vw, 96px);
-  background: linear-gradient(180deg, #ffffff 0%, #fbfbfd 55%, #fbfbfd 100%);
+  background: var(--page);
   overflow: hidden;
+}
+.hero::before {
+  content: "";
+  position: absolute;
+  inset: -20% -10% auto;
+  height: 70%;
+  pointer-events: none;
+  background:
+    radial-gradient(48% 60% at 32% 40%, rgba(0, 113, 227, 0.1), transparent 70%),
+    radial-gradient(42% 55% at 70% 20%, rgba(191, 90, 242, 0.09), transparent 72%),
+    radial-gradient(50% 60% at 55% 85%, rgba(255, 55, 95, 0.06), transparent 75%);
+  filter: blur(20px);
 }
 
 .hero__inner {
@@ -790,7 +803,7 @@ body.is-locked {
 .edu {
   padding: clamp(24px, 3vw, 32px);
   border-radius: var(--r-md);
-  background: var(--gray);
+  background: var(--surface);
   box-shadow: 0 0 0 1px var(--line-soft);
 }
 .edu__label {
