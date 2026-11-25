@@ -1,11 +1,12 @@
-# 作品集预览（临时）
+# 作品集 · Apple 风格改版预览
 
-这是 `wodejbhen/wodejbhen.github.io` 的优化预览分支：在不动线上 `main` 的前提下，把整理好的
-视觉/动效/移动端改动先在独立分支上跑一遍。
+`wodejbhen/wodejbhen.github.io` 的改版预览：按 Apple 的人机界面设计方法（系统字体、
+尺寸分级字距、克制的配色、半透明材质、弹簧式反馈、可中断的过渡）重做了整站的版式与交互。
 
-- 新增文件：`polish.css`、`polish.js`（在原有构建产物之后加载，只做叠加，不改文案与链接）
-- 修改文件：`index.html`（head 元信息、viewport、相对路径、无障碍标签、加载 polish 层）
-- 线上正式站 `main` 未做任何改动；合并回主站只需带上这三个文件。
+- **内容全部沿用**：五个项目、技能、两段实习、教育背景、证书、联系方式，文案照原文，链接照原地址。
+- **文件**：`index.html` + `site.css` + `site.js`，图片从原页面的内联 base64 拆成独立文件（`quiz.jpg`、`shiguang.jpg`、`video-poster.jpg`）。
+- 线上正式站 `main` 未做任何改动。
+- `mobile-check.html`：把预览页放进 390 / 768 宽度里，用来核对移动端版式。
 
 删除预览分支：
 
