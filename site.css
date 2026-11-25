@@ -502,7 +502,7 @@ body.is-locked {
 }
 .lineup__media img {
   width: 100%;
-  aspect-ratio: 4 / 3;
+  aspect-ratio: 16 / 10;
   object-fit: cover;
   object-position: top center;
   transform: scale(1);
@@ -547,17 +547,18 @@ body.is-locked {
   color: var(--on-dark);
 }
 
-.chapter__grid {
+/* Section intro: a large title on the left, the explanation on the right. */
+.chapter__intro {
   display: grid;
-  grid-template-columns: 0.85fr 1.15fr;
-  gap: clamp(28px, 5vw, 72px);
-  align-items: center;
+  grid-template-columns: 0.95fr 1.05fr;
+  gap: clamp(20px, 6vw, 80px);
+  align-items: start;
 }
-.chapter__grid--rev .chapter__text {
-  order: 2;
+.chapter__detail {
+  padding-top: clamp(24px, 3.4vw, 44px);
 }
-.chapter__grid--rev .shot {
-  order: 1;
+.chapter__detail .chapter__body {
+  margin-top: 0;
 }
 
 .chapter__text--center {
@@ -601,6 +602,9 @@ body.is-locked {
   overflow: hidden;
   background: var(--surface);
   box-shadow: var(--shadow-2), 0 0 0 1px var(--line-soft);
+}
+.shot--wide {
+  margin-top: clamp(32px, 4.5vw, 56px);
 }
 .shot img,
 .shot video {
@@ -947,19 +951,14 @@ body.is-locked {
     margin-top: 0;
   }
 
-  .chapter__grid,
+  .chapter__intro,
   .stat-grid,
   .about__grid,
   .proof__grid {
     grid-template-columns: 1fr;
     gap: 28px;
   }
-  .chapter__grid--rev .chapter__text,
-  .chapter__grid--rev .shot,
   .stat-grid--rev .stat-block,
-  .stat-grid--rev .chapter__text {
-    order: initial;
-  }
   .stat-grid--rev .stat-block {
     text-align: left;
   }

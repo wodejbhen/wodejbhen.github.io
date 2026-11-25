@@ -77,15 +77,15 @@
 
       <div class="lineup reveal" style="--d:240ms">
         <a class="lineup__item" href="#p-quiz">
-          <span class="lineup__media"><img src="quiz.jpg" width="1280" height="800" alt="公共营养师三级刷题页截图" fetchpriority="high"></span>
+          <span class="lineup__media" aria-hidden="true"><img src="quiz.jpg" width="1280" height="800" alt="公共营养师三级刷题页截图" fetchpriority="high"></span>
           <span class="lineup__cap">公共营养师三级 · 刷题页</span>
         </a>
         <a class="lineup__item" href="#p-shiguang">
-          <span class="lineup__media"><img src="shiguang.jpg" width="1200" height="750" alt="拾光 · 个人信息管家封面" fetchpriority="high"></span>
+          <span class="lineup__media" aria-hidden="true"><img src="shiguang.jpg" width="1200" height="750" alt="拾光 · 个人信息管家封面" fetchpriority="high"></span>
           <span class="lineup__cap">拾光 · 个人信息管家</span>
         </a>
         <a class="lineup__item" href="#p-video">
-          <span class="lineup__media"><img src="video-poster.jpg" width="1920" height="1080" alt="反式脂肪酸科普短视频画面" fetchpriority="high"></span>
+          <span class="lineup__media" aria-hidden="true"><img src="video-poster.jpg" width="1920" height="1080" alt="反式脂肪酸科普短视频画面" fetchpriority="high"></span>
           <span class="lineup__cap">反式脂肪酸 · 科普短视频</span>
         </a>
       </div>
@@ -103,28 +103,36 @@
     </div>
 
     <article class="chapter chapter--gray" id="p-quiz">
-      <div class="wrap chapter__grid">
-        <div class="chapter__text reveal">
-          <p class="eyebrow">自学项目</p>
-          <h3 class="chapter__title">公共营养师三级<br>刷题页</h3>
-          <p class="chapter__body">备考公共营养师三级时做的刷题工具：275 道理论题，顺序练习、随机练习、错题练习都有，学习记录可以导出备份、再导入恢复。自己备考在用，也分享给同学一起刷。</p>
-          <p class="chapter__links"><a class="link" href="quiz.html" target="_blank" rel="noopener">打开刷题页<svg viewBox="0 0 24 24" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg></a></p>
+      <div class="wrap">
+        <div class="chapter__intro reveal">
+          <div>
+            <p class="eyebrow">自学项目</p>
+            <h3 class="chapter__title">公共营养师三级<br>刷题页</h3>
+          </div>
+          <div class="chapter__detail">
+            <p class="chapter__body">备考公共营养师三级时做的刷题工具：275 道理论题，顺序练习、随机练习、错题练习都有，学习记录可以导出备份、再导入恢复。自己备考在用，也分享给同学一起刷。</p>
+            <p class="chapter__links"><a class="link" href="quiz.html" target="_blank" rel="noopener">打开刷题页<svg viewBox="0 0 24 24" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg></a></p>
+          </div>
         </div>
-        <figure class="shot reveal" style="--d:80ms">
+        <figure class="shot shot--wide reveal" style="--d:100ms">
           <img src="quiz.jpg" width="1280" height="800" alt="刷题页首页：题库概览、题型筛选与练习入口" loading="lazy" decoding="async">
         </figure>
       </div>
     </article>
 
     <article class="chapter" id="p-shiguang">
-      <div class="wrap chapter__grid chapter__grid--rev">
-        <div class="chapter__text reveal">
-          <p class="eyebrow">个人项目</p>
-          <h3 class="chapter__title">拾光<br>个人信息管家</h3>
-          <p class="chapter__body">自己搭的个人信息管家：想法、资料、待办随手记在一处，自动分类、打标签、在记录之间建立关联，能搜索、能提问，也能生成阶段总结，还开放了 REST 接口给外部脚本读写。现在演示的是一份深圳租车门店的运营记录（20 条、12 项待办），点开链接看到的分类、关联和逾期提示都是自动跑出来的。</p>
-          <p class="chapter__links"><a class="link" href="https://shiguang-31231.app.workbuddy.host/?sharecode=F2BNRLCKPN" target="_blank" rel="noopener">打开拾光<svg viewBox="0 0 24 24" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg></a></p>
+      <div class="wrap">
+        <div class="chapter__intro reveal">
+          <div>
+            <p class="eyebrow">个人项目</p>
+            <h3 class="chapter__title">拾光<br>个人信息管家</h3>
+          </div>
+          <div class="chapter__detail">
+            <p class="chapter__body">自己搭的个人信息管家：想法、资料、待办随手记在一处，自动分类、打标签、在记录之间建立关联，能搜索、能提问，也能生成阶段总结，还开放了 REST 接口给外部脚本读写。现在演示的是一份深圳租车门店的运营记录（20 条、12 项待办），点开链接看到的分类、关联和逾期提示都是自动跑出来的。</p>
+            <p class="chapter__links"><a class="link" href="https://shiguang-31231.app.workbuddy.host/?sharecode=F2BNRLCKPN" target="_blank" rel="noopener">打开拾光<svg viewBox="0 0 24 24" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg></a></p>
+          </div>
         </div>
-        <figure class="shot reveal" style="--d:80ms">
+        <figure class="shot shot--wide reveal" style="--d:100ms">
           <img src="shiguang.jpg" width="1200" height="750" alt="拾光首页：20 条记录、12 项待办的搜索与筛选界面" loading="lazy" decoding="async">
         </figure>
       </div>
