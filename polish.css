@@ -1,0 +1,367 @@
+/* ==========================================================================
+   Craft pass — loads after the built bundle and layers on top of it.
+   Nothing here changes copy, links or assets; it refines motion, mobile
+   behaviour, legibility and the card/frame rhythm.
+   ========================================================================== */
+
+:root {
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+  --dur-press: 140ms;
+  --dur-ui: 200ms;
+  --hairline: rgba(255, 255, 255, 0.08);
+  --frame-line: rgba(0, 229, 255, 0.2);
+}
+
+/* ---------- Platform basics ---------------------------------------------- */
+
+html {
+  -webkit-tap-highlight-color: transparent;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+a,
+button,
+[role="button"],
+.thumbnail,
+.apple-nav__links a,
+.mobile-menu a {
+  touch-action: manipulation;
+}
+
+/* Text that is a control must not be selectable; body copy stays selectable. */
+.apple-nav,
+.apple-nav__brand,
+.apple-nav__links,
+.cta-btn,
+.hero-scroll,
+.back-to-top,
+.skill-tags span,
+.section-kicker,
+.pbd-disclosure > summary {
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+
+/* ---------- Viewport units & safe areas ---------------------------------- */
+
+/* dvh/svh: the hero tracks the visible area instead of the largest viewport,
+   so the URL bar no longer cuts the first screen on phones. */
+#hero {
+  min-height: 100svh;
+  padding-top: calc(12rem + env(safe-area-inset-top, 0px));
+  padding-bottom: calc(10rem + env(safe-area-inset-bottom, 0px));
+}
+
+.apple-nav {
+  height: calc(5.2rem + env(safe-area-inset-top, 0px));
+  padding-top: env(safe-area-inset-top, 0px);
+}
+.apple-nav--scrolled {
+  height: calc(4.4rem + env(safe-area-inset-top, 0px));
+}
+.apple-nav--scrolled .apple-nav__inner {
+  height: 4.4rem;
+}
+
+/* Anchored sections clear the fixed bar, notch included. */
+section[id] {
+  scroll-margin-top: calc(6rem + env(safe-area-inset-top, 0px));
+}
+
+#contact {
+  padding-bottom: calc(10rem + env(safe-area-inset-bottom, 0px));
+}
+
+.footer {
+  padding-bottom: calc(3.2rem + env(safe-area-inset-bottom, 0px));
+}
+
+.mobile-menu {
+  padding: calc(2rem + env(safe-area-inset-top, 0px)) 2rem
+    calc(2rem + env(safe-area-inset-bottom, 0px));
+}
+
+/* ---------- Motion: keep what explains, cut what only competes ----------- */
+
+/* The lightning flash + screen-wide flicker is a photosensitivity risk and
+   reads as a rendering glitch on first load. */
+.storm-flash,
+.bolt {
+  display: none !important;
+}
+
+/* Two chroma copies of the name stacked on the real one: text noise, and a
+   screen reader announces the name three times. */
+#hero .hero-title .text-color-main::before,
+#hero .hero-title .text-color-main::after {
+  display: none;
+}
+
+/* Slow colour travel on the name stays; the glitch tremors go. */
+#hero .hero-title .text-color-main {
+  animation: name-pan 14s ease-in-out infinite alternate;
+}
+
+/* Infinite pulse on the primary CTA and per-word marquee pulsing: decoration
+   that never stops, so it never feels like feedback. */
+#hero .cta-btn--hero {
+  animation: none;
+}
+.marquee span {
+  animation: none;
+  opacity: 0.92;
+}
+
+/* Ken-burns on every project image fights the hover scale and burns frames
+   on phones. The hover zoom stays. */
+#projects .project-wrapper__image .thumbnail img {
+  animation: none !important;
+}
+
+/* Slow the remaining orbital accent so it reads as ambience, not a spinner. */
+#projects .thumbnail--stat::after {
+  animation-duration: 34s;
+}
+
+/* A blink cursor on the eyebrow, if present, should not blink twice a second. */
+#hero .hero-eyebrow::after {
+  animation-duration: 1.6s;
+}
+
+/* ---------- Interactions: press states and hover gating ------------------ */
+
+/* The bundle writes transform inline on mousemove, which would swallow the
+   :active scale; !important restores press feedback. */
+.cta-btn:active {
+  transform: scale(0.97) !important;
+  transition: transform var(--dur-press) var(--ease-out);
+}
+
+.thumbnail img,
+.thumbnail video {
+  transition: transform 600ms var(--ease-out);
+}
+
+/* Touch devices fake :hover and keep it until the next tap, so the raised /
+   zoomed / shining states must not fire there. */
+@media (hover: none) {
+  #projects .project-wrapper__image .thumbnail:hover {
+    border-color: var(--frame-line);
+    box-shadow: 0 18px 40px -12px rgba(0, 0, 0, 0.75);
+  }
+  #projects .project-wrapper__image .thumbnail:hover img,
+  #projects .project-wrapper__image .thumbnail:hover video {
+    transform: none;
+  }
+  #projects .project-wrapper__image .thumbnail:not(.thumbnail--stat)::after {
+    transform: translate(-120%);
+  }
+  #skills .skill-card:hover {
+    transform: none;
+  }
+  #skills .skill-tags span:hover {
+    color: #e9e9f4;
+    background: transparent;
+    border-color: rgba(255, 42, 109, 0.35);
+    transform: none;
+  }
+  .cta-btn:hover::after,
+  .contact-actions .apple-link:hover::after {
+    left: -90%;
+  }
+  .cta-btn:hover {
+    filter: none;
+    transform: none;
+  }
+  #experience .exp-item:hover h3 {
+    color: #fff;
+    text-shadow: none;
+  }
+  .marquee:hover .marquee__track {
+    animation-play-state: running;
+  }
+}
+
+/* ---------- Typography -------------------------------------------------- */
+
+/* Numbers that change or sit in columns should not jitter. */
+.stat-num,
+.stat-label,
+.project-wrapper__text-meta,
+.exp-item__meta,
+.skill-card__idx,
+.footer__text,
+.contact-wrapper__text {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Headings break into balanced lines; body copy avoids orphans. */
+.hero-title,
+.section-title {
+  text-wrap: balance;
+}
+#projects .project-wrapper__text p,
+#about .about-wrapper__info-text,
+#experience .exp-item p,
+#skills .skill-card p {
+  text-wrap: pretty;
+}
+
+/* Body copy on near-black at 1.7rem: lift it one step for legibility. */
+#projects .project-wrapper__text p,
+#skills .skill-card p,
+#about .about-wrapper__info-text,
+#experience .exp-item p {
+  color: #b8b8cf;
+}
+.section-sub {
+  color: #adadc6;
+}
+#hero .hero-sub {
+  color: #bcbcd1;
+  max-width: 32em;
+}
+
+/* Long app names in the narrow text column wrap without hyphen soup. */
+.project-wrapper__text-title {
+  text-wrap: balance;
+  overflow-wrap: anywhere;
+}
+
+/* ---------- Frames and cards ------------------------------------------- */
+
+/* One card ratio for the media rows: three screenshots at three different
+   source heights made the section rhythm uneven. Top-anchored so the shot
+   still starts where the app starts. */
+#projects .project-wrapper__image .thumbnail {
+  aspect-ratio: 16 / 10;
+  border: 1px solid var(--frame-line);
+  border-radius: 14px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05),
+    0 18px 40px -12px rgba(0, 0, 0, 0.75);
+}
+
+#projects .project-wrapper__image .thumbnail img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top center;
+}
+
+/* Video keeps its whole frame and its control strip. */
+#projects .project-wrapper__image .thumbnail video {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  background: #05050d;
+}
+
+/* The two stat tiles keep their own proportions. */
+#projects .thumbnail--stat {
+  aspect-ratio: auto;
+  min-height: 30rem;
+  height: 100%;
+}
+
+#skills .skill-card {
+  border: 1px solid var(--hairline);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04),
+    0 10px 30px -20px rgba(0, 0, 0, 0.9);
+}
+
+/* Legibility of the fixed bar over bright content. */
+.apple-nav {
+  -webkit-backdrop-filter: saturate(180%) blur(14px);
+  backdrop-filter: saturate(180%) blur(14px);
+}
+
+/* The drawing sheets are paper: keep them light, but seat them as a card
+   instead of a bare white strip floating on black. */
+.pbd-disclosure {
+  border-radius: 12px;
+  box-shadow: 0 16px 40px -22px rgba(0, 0, 0, 0.9);
+  opacity: 0.94;
+  transition: opacity var(--dur-ui) var(--ease-out);
+}
+.pbd-disclosure[open],
+.pbd-disclosure:hover {
+  opacity: 1;
+}
+.pbd-disclosure > summary {
+  border-radius: 12px 12px 0 0;
+  transition: background var(--dur-ui) var(--ease-out);
+}
+.pbd-disclosure[open] > summary {
+  border-radius: 12px 12px 0 0;
+}
+.pbd-disclosure > summary:hover {
+  background: #f4f4f4;
+}
+
+/* ---------- Reduced motion ---------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  /* Ambient layers go away entirely; what stays is colour, not movement. */
+  .aurora,
+  .mist,
+  .grain,
+  .cursor-glow,
+  .hero-orbit,
+  .storm-flash,
+  .bolt,
+  #projects .thumbnail--stat::after,
+  .apple-nav__pulse::after,
+  #hero .hero-glow {
+    display: none !important;
+  }
+  .marquee__track {
+    animation: none !important;
+  }
+  #hero .hero-title .text-color-main {
+    animation: none !important;
+  }
+  #projects .project-wrapper__image .thumbnail img {
+    transition: none !important;
+  }
+  .section-title::after {
+    transform: scaleX(1) !important;
+  }
+}
+
+/* ---------- Small screens --------------------------------------------- */
+
+@media (max-width: 640px) {
+  /* Large blurred layers that animate behind content are the first thing a
+     mid-range phone drops frames on. */
+  #hero .hero-glow,
+  .grain,
+  .cursor-glow {
+    display: none;
+  }
+  .aurora,
+  .mist {
+    animation: none;
+  }
+
+  #hero {
+    padding-top: calc(9rem + env(safe-area-inset-top, 0px));
+    padding-bottom: calc(8rem + env(safe-area-inset-bottom, 0px));
+  }
+
+  #projects .project-wrapper__image .thumbnail {
+    border-radius: 12px;
+  }
+  #projects .thumbnail--stat {
+    min-height: 24rem;
+  }
+
+  /* 16px minimum keeps iOS from zooming into the page. */
+  input,
+  textarea,
+  select {
+    font-size: 16px;
+  }
+}
