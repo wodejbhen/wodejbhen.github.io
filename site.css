@@ -959,6 +959,7 @@ body.is-locked {
   /* A horizontal rail keeps the shots readable and still swipes like iOS. */
   .lineup {
     display: grid;
+    grid-template-columns: none;
     grid-auto-flow: column;
     grid-auto-columns: 78%;
     gap: 12px;
