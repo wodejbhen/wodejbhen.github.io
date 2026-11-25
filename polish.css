@@ -259,10 +259,11 @@ section[id] {
   background: #05050d;
 }
 
-/* The two stat tiles keep their own proportions. */
-#projects .thumbnail--stat {
+/* The two stat tiles keep their own proportions (higher specificity than the
+   shared frame rule above). */
+#projects .project-wrapper__image .thumbnail.thumbnail--stat {
   aspect-ratio: auto;
-  min-height: 30rem;
+  min-height: 36rem;
   height: 100%;
 }
 
@@ -354,7 +355,7 @@ section[id] {
   #projects .project-wrapper__image .thumbnail {
     border-radius: 12px;
   }
-  #projects .thumbnail--stat {
+  #projects .project-wrapper__image .thumbnail.thumbnail--stat {
     min-height: 24rem;
   }
 
