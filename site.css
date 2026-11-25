@@ -669,7 +669,7 @@ body.is-locked {
 
 .skills {
   padding: clamp(64px, 9vw, 120px) 0;
-  background: var(--page);
+  background: var(--gray);
 }
 
 .cards {
@@ -736,7 +736,7 @@ body.is-locked {
 
 .experience {
   padding: clamp(64px, 9vw, 120px) 0;
-  background: var(--gray);
+  background: var(--page);
 }
 
 .rows {
@@ -777,7 +777,7 @@ body.is-locked {
 
 .about {
   padding: clamp(64px, 9vw, 120px) 0;
-  background: var(--page);
+  background: var(--gray);
 }
 
 .about__grid {
@@ -824,7 +824,7 @@ body.is-locked {
 
 .proof {
   padding: clamp(64px, 9vw, 120px) 0;
-  background: var(--gray);
+  background: var(--page);
 }
 
 .proof__grid {
