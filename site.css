@@ -483,7 +483,8 @@ body.is-locked {
 
 .hero__specs {
   margin: 44px auto 0;
-  max-width: 44em;
+  max-width: 52em;
+  text-wrap: pretty;
   font-size: 13px;
   line-height: 1.9;
   color: #86868b;
