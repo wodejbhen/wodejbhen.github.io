@@ -628,6 +628,11 @@ body.is-locked {
 .shot--wide {
   margin-top: clamp(32px, 4.5vw, 56px);
 }
+/* A page-shaped screenshot reads better at page width than stretched to 980. */
+.shot--page {
+  max-width: 560px;
+  margin: clamp(32px, 4.5vw, 56px) auto 0;
+}
 .shot img,
 .shot video {
   width: 100%;
