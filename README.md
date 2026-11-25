@@ -14,8 +14,9 @@
 - `index.html` — 全新的语义化页面结构
 - `site.css` — 设计系统（色彩、字号、间距、材质、动效）
 - `site.js` — 滚动状态、章节定位、入场动效、移动端菜单
-- `quiz.jpg`、`shiguang.jpg`、`video-poster.jpg` — 从原页面的内联 base64 拆出来的图片
+- `quiz-page.jpg`、`shiguang.jpg`、`video-poster.jpg` — 从原页面的内联 base64 拆出来的图片（刷题页裁到内容宽度）
 - `quiz.html`、`fanzhizhifang.mp4`、`certificate.jpg` — 原作品文件
+- 旧的构建产物（`index.*.css/js`、`swarm-click.*`、`project-drawing.*`、`local-optimization.css`）在这个分支里不再需要；`main` 上仍保留
 - `mobile-check.html` — 把页面放进 390 / 768 宽度里核对移动端版式
 
 ## 线上
