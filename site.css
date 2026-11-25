@@ -22,7 +22,7 @@
   --link-on-dark: #2997ff;
 
   /* Materials */
-  --nav-bg: rgba(251, 251, 253, 0.72);
+  --nav-bg: rgba(251, 251, 253, 0.86);
   --sheet-bg: rgba(251, 251, 253, 0.86);
 
   /* Radii */
@@ -589,9 +589,17 @@ body.is-locked {
   text-wrap: balance;
 }
 .chapter__title--sm {
-  font-size: clamp(26px, 3vw, 34px);
+  font-size: clamp(24px, 2.6vw, 30px);
   letter-spacing: -0.02em;
-  line-height: 1.15;
+  line-height: 1.2;
+}
+
+/* Break Chinese between phrases, not inside a word (Chrome; ignored elsewhere). */
+.chapter__title,
+.card h3,
+.row h3,
+.contact__title {
+  word-break: auto-phrase;
 }
 
 .chapter__body {
@@ -638,7 +646,7 @@ body.is-locked {
 
 .stat-grid {
   display: grid;
-  grid-template-columns: 0.9fr 1.1fr;
+  grid-template-columns: 0.82fr 1.18fr;
   gap: clamp(24px, 5vw, 64px);
   align-items: center;
 }
